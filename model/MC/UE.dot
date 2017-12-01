@@ -1,0 +1,109 @@
+digraph UE{
+rankdir = LR;
+size = "8,5"
+node [shape = circle, label="ue_deregistered"]ue_deregistered;
+node [shape = circle, label="ue_register_initiated"]ue_register_initiated;
+node [shape = circle, label="ue_registered"]ue_registered;
+node [shape = circle, label="ue_detach_initiated"]ue_detach_initiated;
+node [shape = circle, label="ue_tau_initiated"]ue_tau_initiated;
+node [shape = circle, label="ue_service_initiated"]ue_service_initiated;
+node [shape = circle, label="ue_idle"]ue_idle;
+ue_deregistered -> ue_deregistered [label = "ue_T1:  inactivity_timer_expired & !mobile_restart & !ue_detach_requested/
+ue_security_context_exist = FALSE, ue_attach_completed = FALSE, paging_IMSI_received=FALSE, ue_auth_fail_count = 0, ue_sm_reject_count = 0"]
+ue_deregistered -> ue_register_initiated [label = "ue_T2:  mobile_restart & !ue_detach_requested/
+attach_req, paging_IMSI_received=FALSE, ue_auth_fail_count = 0, ue_sm_reject_count = 0, ue_security_context_updated = FALSE, ue_attach_completed = FALSE, ue_auth_mme = FALSE"]
+ue_deregistered -> ue_deregistered [label = "ue_T3:  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) & ! mobile_restart & !ue_detach_requested/
+ue_security_context_exist = FALSE"]
+ue_register_initiated -> ue_register_initiated [label = "ue_T4:  mobile_restart & !ue_detach_requested/
+attach_req, ue_auth_fail_count = 0, ue_sm_reject_count = 0, ue_security_context_updated = FALSE, ue_attach_completed = FALSE, ue_auth_mme = FALSE"]
+ue_register_initiated -> ue_deregistered [label = "ue_T5:  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) & ! mobile_restart & !ue_detach_requested/
+ue_security_context_exist = FALSE"]
+ue_register_initiated -> ue_detach_initiated [label = "ue_T6: ue_detach_requested & !mobile_restart/
+detach_req"]
+ue_register_initiated -> ue_register_initiated [label = "ue_T7:  chan_MU=chanMU_id_request & !mobile_restart & !ue_detach_requested/
+id_response"]
+ue_register_initiated -> ue_register_initiated [label = "ue_T8:  chan_MU=chanMU_auth_request & auth_req_mac_failure  & ! mobile_restart & !ue_detach_requested/
+auth_mac_failure, ue_auth_fail_count = ue_auth_fail_count + 1, ue_auth_mme = FALSE"]
+ue_register_initiated -> ue_register_initiated [label = "ue_T9:  chan_MU=chanMU_auth_request & !auth_req_mac_failure & !seq_check & ue_auth_fail_count_check & ! mobile_restart & !ue_detach_requested/
+auth_sync_failure, mme_seq = ue_seq + 1, ue_auth_fail_count = ue_auth_fail_count + 1, ue_auth_mme = FALSE"]
+ue_register_initiated -> ue_deregistered [label = "ue_T10:  chan_MU=chanMU_auth_request & !auth_req_mac_failure & !seq_check & ! ue_auth_fail_count_check & ! mobile_restart & !ue_detach_requested/
+auth_sync_failure, mme_seq = ue_seq + 1, ue_auth_fail_count = ue_auth_fail_count + 1, downgrade_to_3G, ue_auth_mme = FALSE"]
+ue_register_initiated -> ue_register_initiated [label = "ue_T11:  chan_MU=chanMU_auth_request & !auth_req_mac_failure & seq_check & ! mobile_restart & !ue_detach_requested/
+auth_response, ue_seq = ((mme_ue_shared_seq + 1) mod 32), ue_auth_fail_count = 0, ue_auth_mme = TRUE"]
+ue_register_initiated -> ue_register_initiated [label = "ue_T12:  (chan_MU=chanMU_security_mode_command & ue_auth_mme & !sm_command_mac_failure & !security_capabilities_mismatch & ! mobile_restart & !ue_detach_requested)/
+sm_complete, ue_sm_reject_count = 0, ue_security_context_updated = TRUE, ue_security_context_exist = TRUE"]
+ue_register_initiated -> ue_register_initiated [label = "ue_T13:  (chan_MU=chanMU_security_mode_command  & ue_auth_mme & (sm_command_mac_failure | security_capabilities_mismatch)  & ! mobile_restart & !ue_detach_requested)/
+sm_reject, ue_sm_reject_count = ue_sm_reject_count + 1, ue_security_context_updated = FALSE"]
+ue_register_initiated -> ue_registered [label = "ue_T14:  (chan_MU=chanMU_attach_accept  & ue_auth_mme & ue_security_context_exist & ! mobile_restart & !ue_detach_requested)/
+attach_complete, ue_attach_completed=TRUE"]
+ue_registered -> ue_register_initiated [label = "ue_T15:  mobile_restart & !ue_detach_requested  & !ta_changed & !ue_inactivity_detected/
+attach_req, ue_auth_fail_count = 0, ue_sm_reject_count = 0, ue_attach_completed = FALSE"]
+ue_registered -> ue_deregistered [label = "ue_T16:  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) & !mobile_restart & !ue_detach_requested & !ta_changed & !ue_inactivity_detected/
+ue_security_context_exist = FALSE"]
+ue_registered -> ue_detach_initiated [label = "ue_T17: ue_detach_requested & !mobile_restart  & !ta_changed & !ue_inactivity_detected/
+detach_req"]
+ue_registered -> ue_registered [label = "ue_T18:  chan_MU=chanMU_id_request & !mobile_restart & !ue_detach_requested & !ue_inactivity_detected/
+id_response"]
+ue_registered -> ue_registered [label = "ue_T19:  chan_MU=chanMU_auth_request & auth_req_mac_failure  & ! mobile_restart  & !ue_detach_requested & !ta_changed  & !ue_inactivity_detected/
+auth_mac_failure, ue_auth_fail_count = ue_auth_fail_count + 1"]
+ue_registered -> ue_registered [label = "ue_T20:  chan_MU=chanMU_auth_request & !auth_req_mac_failure & !seq_check & ue_auth_fail_count_check & ! mobile_restart & !ue_detach_requested & !ta_changed  & !ue_inactivity_detected/
+auth_sync_failure, mme_seq = ue_seq + 1, ue_auth_fail_count = ue_auth_fail_count + 1"]
+ue_registered -> ue_deregistered [label = "ue_T21:  chan_MU=chanMU_auth_request & !auth_req_mac_failure & !seq_check & ! ue_auth_fail_count_check & ! mobile_restart & !ue_detach_requested/
+auth_sync_failure, mme_seq = ue_seq + 1, ue_auth_fail_count = ue_auth_fail_count + 1, downgrade_to_3G"]
+ue_registered -> ue_registered [label = "ue_T22:  chan_MU=chanMU_auth_request & !auth_req_mac_failure & seq_check & ! mobile_restart & !ue_detach_requested & !ta_changed  & !ue_inactivity_detected/
+auth_response, ue_seq = ((mme_ue_shared_seq + 1) mod 32), ue_auth_fail_count = 0"]
+ue_registered -> ue_registered [label = "ue_T23:  (chan_MU=chanMU_security_mode_command & !sm_command_mac_failure & !security_capabilities_mismatch & ! mobile_restart & !ue_detach_requested & !ta_changed & !ue_inactivity_detected)/
+sm_complete, ue_sm_reject_count = 0, ue_security_context_updated = TRUE"]
+ue_registered -> ue_registered [label = "ue_T24:  (chan_MU=chanMU_security_mode_command & (sm_command_mac_failure | security_capabilities_mismatch)  & ! mobile_restart & !ue_detach_requested & !ta_changed & !ue_inactivity_detected)/
+sm_reject, ue_sm_reject_count = ue_sm_reject_count + 1, ue_security_context_updated = FALSE"]
+ue_registered -> ue_registered [label = "ue_T25:  (chan_MU=chanMU_attach_accept & ! mobile_restart & !ue_detach_requested)/
+attach_complete, ue_attach_completed=TRUE"]
+ue_registered -> ue_registered [label = "ue_T26:  (chan_MU=chanMU_guti_reallocation_command & security_context_matched & ! mobile_restart & !ue_detach_requested)/
+guti_reallocation_complete"]
+ue_registered -> ue_registered [label = "ue_T27:  (chan_MU=chanMU_guti_reallocation_command & !security_context_matched & ! mobile_restart & !ue_detach_requested)/
+null_action"]
+ue_registered -> ue_tau_initiated [label = "ue_T28:  ta_changed & !mobile_restart & !ue_detach_requested & !ue_inactivity_detected/
+tau_request"]
+ue_registered -> ue_idle [label = "ue_T29:  ue_security_context_exist & ue_attach_completed & ue_inactivity_detected  & !mobile_restart & !ue_detach_requested & !ta_changed/
+null_action"]
+ue_tau_initiated -> ue_register_initiated [label = "ue_T30:  mobile_restart & !ue_detach_requested & !ta_changed/
+attach_req, ue_auth_fail_count = 0, ue_sm_reject_count = 0, ue_security_context_updated = FALSE, ue_attach_completed = FALSE"]
+ue_tau_initiated -> ue_deregistered [label = "ue_T31:  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) & !mobile_restart & !ue_detach_requested & !ta_changed/
+ue_security_context_exist = FALSE"]
+ue_tau_initiated -> ue_detach_initiated [label = "ue_T32: ue_detach_requested & !mobile_restart  & !ta_changed/
+detach_req"]
+ue_tau_initiated -> ue_tau_initiated [label = "ue_T33:  chan_MU=chanMU_id_request & !mobile_restart & !ue_detach_requested & !ta_changed /
+id_response"]
+ue_tau_initiated -> ue_tau_initiated [label = "ue_T34:  ta_changed & !mobile_restart &ue_detach_requested/
+tau_request"]
+ue_tau_initiated -> ue_tau_initiated [label = "ue_T35:  chan_MU=chanMU_auth_request & auth_req_mac_failure  & ! mobile_restart  & !ue_detach_requested & !ta_changed /
+auth_mac_failure, ue_auth_fail_count = ue_auth_fail_count + 1"]
+ue_tau_initiated -> ue_tau_initiated [label = "ue_T36:  chan_MU=chanMU_auth_request & !auth_req_mac_failure & !seq_check & ue_auth_fail_count_check & ! mobile_restart & !ue_detach_requested & !ta_changed/
+auth_sync_failure, mme_seq = ue_seq + 1, ue_auth_fail_count = ue_auth_fail_count + 1"]
+ue_tau_initiated -> ue_tau_initiated [label = "ue_T37:  chan_MU=chanMU_auth_request & !auth_req_mac_failure & seq_check & ! mobile_restart & !ue_detach_requested & !ta_changed/
+auth_response, ue_seq = ((mme_ue_shared_seq + 1) mod 32), ue_auth_fail_count = 0"]
+ue_tau_initiated -> ue_tau_initiated [label = "ue_T38:  (chan_MU=chanMU_security_mode_command & !sm_command_mac_failure & !security_capabilities_mismatch & ! mobile_restart & !ue_detach_requested & !ta_changed & !ue_inactivity_detected)/
+sm_complete, ue_sm_reject_count = 0, ue_security_context_updated = TRUE"]
+ue_tau_initiated -> ue_tau_initiated [label = "ue_T39:  (chan_MU=chanMU_security_mode_command & (sm_command_mac_failure | security_capabilities_mismatch)  & ! mobile_restart & !ue_detach_requested & !ta_changed)/
+sm_reject, ue_sm_reject_count = ue_sm_reject_count + 1, ue_security_context_updated = FALSE"]
+ue_tau_initiated -> ue_registered [label = "ue_T40:  chan_MU=chanMU_tau_accept & !mobile_restart  & !ta_changed &ue_detach_requested/
+tau_complete"]
+ue_detach_initiated -> ue_register_initiated [label = "ue_T41:  mobile_restart & !ue_detach_requested/
+attach_req, ue_auth_fail_count = 0, ue_security_context_exist=FALSE, ue_attach_completed = FALSE"]
+ue_detach_initiated -> ue_detach_initiated [label = "ue_T42: ue_detach_requested & !mobile_restart/
+detach_req"]
+ue_detach_initiated -> ue_deregistered [label = "ue_T43:  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU=chanMU_service_reject) & !mobile_restart & !ue_detach_requested/
+ue_security_context_exist = FALSE"]
+ue_idle -> ue_deregistered [label = "ue_T44:  (chan_MU=chanMU_paging_IMSI & paging_occasion & !mobile_restart)/
+paging_IMSI_received=TRUE"]
+ue_idle -> ue_service_initiated [label = "ue_T45:  (chan_MU=chanMU_paging_GUTI & paging_occasion & !mobile_restart)/
+service_request"]
+ue_service_initiated -> ue_register_initiated [label = "ue_T46:  mobile_restart & !ue_detach_requested /
+attach_req, ue_auth_fail_count = 0, ue_sm_reject_count = 0, ue_security_context_updated = FALSE, ue_attach_completed = FALSE"]
+ue_service_initiated -> ue_detach_initiated [label = "ue_T47: ue_detach_requested & !mobile_restart/
+detach_req"]
+ue_service_initiated -> ue_deregistered [label = "ue_T48:  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU=chanMU_service_reject) & !mobile_restart & !ue_detach_requested/
+ue_security_context_exist = FALSE"]
+ue_service_initiated -> ue_registered [label = "ue_T49:  (chan_MU = chanMU_service_complete & !mobile_restart  & !ue_detach_requested)/
+null_action"]
+}

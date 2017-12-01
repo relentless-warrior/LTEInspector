@@ -1,0 +1,102 @@
+(* Model to check privacy of original 3G *)
+type key.
+
+(* Functions for encryption and decryption *)
+fun enc(bitstring, key): bitstring.
+reduc forall m: bitstring, k: key; dec(enc(m, k), k) = m.
+
+(* MAC generation *)
+fun MAC(bitstring, key): bitstring.
+
+(* Function to conditionally select data *)
+fun switch(bitstring, bitstring, bitstring, bitstring, bitstring): bitstring
+	reduc forall a: bitstring, b: bitstring, c: bitstring, d: bitstring; switch(a, a, b, c, d) = b
+	otherwise forall a: bitstring, b: bitstring, c: bitstring, d: bitstring; switch(a, b, c, a, d) = d. 
+
+(* Add support for XOR operation, treating it like an encryption *)
+fun xor_enc(bitstring, key): bitstring.
+reduc forall m: bitstring, k: key; xor_dec(xor_enc(m, k), k) = m.
+
+(* Function to retrieve key corresponding to an IMSI *)
+fun getKey(bitstring): key [private].
+(* Get sequence number for IMSI *)
+fun getSQN(bitstring): bitstring [private].
+
+(* 3G specific functions *)
+fun f1(key, bitstring, bitstring, bitstring): bitstring.
+fun f2(key, bitstring): bitstring.
+fun f3(key, bitstring): key.
+fun f4(key, bitstring): key.
+fun f5(key, bitstring): key.
+
+(* Communication channel for SIM to serving network *)
+free s2s: channel.
+(* Communication channel for servering network to home network *)
+free s2h: channel [private].
+
+(* Constants used in GSM messages *)
+const ID_REQUEST: bitstring.
+const ID_RESPONSE: bitstring.
+const AUTH_REQUEST: bitstring.
+const AUTH_RESPONSE: bitstring.
+
+(* Authentication Management Field *)
+free AMF: bitstring [private].
+
+(* Process implementing the SIM card *)
+let sim(imsi: bitstring) = 
+	(* Get the local key *)
+	let k = getKey(imsi) in
+	(* Receive request for identification *)
+	in(s2s, =ID_REQUEST);
+	(* Respond with IMSI *)
+	out(s2s, (ID_RESPONSE, imsi));
+	(* Receive request for authentication *)
+	in(s2s, (=AUTH_REQUEST, rand: bitstring, (sqn_ak: bitstring, amf: bitstring, mac: bitstring)));
+	(* Compute authentication key *)
+	let ak = f5(k, rand) in
+	(* Retrieve sequence number *)
+	let xsqn = xor_dec(sqn_ak, ak) in
+	(* Check the sequence number and MAC *)
+	if xsqn = getSQN(imsi) && mac = f1(k, xsqn, amf, rand) then
+		let sres = f2(k, rand) in
+		let ck = f3(k, rand) in
+		let ik = f4(k, rand) in
+		out(s2s, (AUTH_RESPONSE, sres)).
+
+(* Process implementing the serving network *)
+let serving =
+	(* Request identification from the SIM *)
+	out(s2s, ID_REQUEST);
+	(* Receive IMSI from the SIM *)
+	in(s2s, (=ID_RESPONSE, imsi: bitstring));
+	(* Forward IMSI to the home network and receive necessary data for authentication and the session key *)
+	out(s2h, imsi);
+	in(s2h, (rand: bitstring, (sqn_ak: bitstring, amf: bitstring, mac: bitstring), xres: bitstring, ck: key, ik: key));
+	(* Send the authentication data to the SIM *)
+	let autn = (sqn_ak, amf, mac) in
+	out(s2s, (AUTH_REQUEST, rand, autn));
+	(* Receive and check the authentication response *)
+	in(s2s, (=AUTH_RESPONSE, =xres)).
+
+(* Process implementing the home network *)
+let home =
+	(* Receive an IMSI from the serving network *)
+	in(s2h, imsi: bitstring);
+	(* Retrieve the key *)
+	let k = getKey(imsi) in
+	(* Get the sequence number *)
+	let sqn = getSQN(imsi) in
+	(* Generate and return authentication related data and session keys *)
+	new rand: bitstring;
+	let mac = f1(k, sqn, AMF, rand) in
+	let xres = f2(k, rand) in
+	let ck = f3(k, rand) in
+	let ik = f4(k, rand) in
+	let ak = f5(k, rand) in
+	let autn = (xor_enc(sqn, ak), AMF, mac) in
+	out(s2h, (rand, autn, xres, ck, ik)).
+
+process
+	new imsi: bitstring; new imsi2: bitstring;
+	(sim(imsi) | sim(imsi2) | sim(choice[imsi, imsi2]) | !serving | !home)

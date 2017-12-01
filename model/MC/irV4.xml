@@ -1,0 +1,2955 @@
+<system label="LTE">
+    <VARS>
+        <VAR label="mobile_restart">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <mutualexlusion>yes</mutualexlusion>
+            <fsm>UE</fsm>
+        </VAR>
+
+         <VAR label="auth_req_mac_failure">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>UE</fsm>
+        </VAR>
+       
+        <VAR label="sm_command_mac_failure">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>UE</fsm>
+        </VAR>
+       
+        <VAR label="ue_detach_requested">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <mutualexlusion>yes</mutualexlusion>
+            <fsm>UE</fsm>
+        </VAR>
+
+       
+        <VAR label="ue_attach_completed">
+            <datatype>boolean</datatype>
+            <controltype> state </controltype>
+            <possiblevalues>TRUE,FALSE</possiblevalues>
+            <initialvalue>FALSE</initialvalue>
+        </VAR>
+
+
+        <VAR label="ue_auth_mme">
+            <datatype>boolean</datatype>
+            <controltype> state </controltype>
+            <possiblevalues>TRUE,FALSE</possiblevalues>
+            <initialvalue>FALSE</initialvalue>
+        </VAR>
+
+        <VAR label="xres_matched_sres">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>MME</fsm>
+        </VAR>
+
+        <VAR label="mme_network_detach">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <mutualexlusion>yes</mutualexlusion>
+            <fsm>MME</fsm>
+        </VAR>
+
+        
+        <VAR label="paging_GUTI_required">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>MME</fsm>
+        </VAR>
+        
+        <VAR label="paging_IMSI_required">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>MME</fsm>
+        </VAR>
+        
+
+        <VAR label="esm_failure">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>MME</fsm>
+        </VAR>
+
+        <VAR label="tau_failure">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>MME</fsm>
+        </VAR>
+
+        <VAR label="id_request_required">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>MME</fsm>
+        </VAR>
+
+        <VAR label="GUTI_reallocation_required">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>MME</fsm>
+        </VAR>
+        
+        <VAR label="security_context_matched">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>UE</fsm>
+        </VAR>
+
+        <VAR label="GUTI_IMSI_mapping_correct">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>MME</fsm>
+        </VAR>
+
+        <VAR label="ta_changed">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            <fsm>UE</fsm>
+        </VAR>
+
+        <VAR label="paging_occasion">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+            
+        </VAR>
+
+        <VAR label="paging_IMSI_received">
+            <datatype>boolean</datatype>
+            <controltype>state</controltype>
+            <possiblevalues>TRUE,FALSE</possiblevalues>
+            <initialvalue>FALSE</initialvalue>
+        </VAR>
+
+        <VAR label="ue_inactivity_detected">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+        </VAR>
+
+        <VAR label="service_completed">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+        </VAR>
+
+        <VAR label="security_capabilities_mismatch">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+        </VAR>
+
+        <VAR label="inactivity_timer_expired">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+        </VAR>
+
+        <VAR label="cipher_suite_change">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+        </VAR>
+
+        <VAR label="mme_auth_required">
+            <datatype>boolean</datatype>
+            <controltype> environment </controltype>
+        </VAR>
+
+        <VAR label="ue_security_context_exist">
+            <datatype>boolean</datatype>
+            <controltype>state</controltype>
+            <possiblevalues>TRUE,FALSE</possiblevalues>
+            <initialvalue>FALSE</initialvalue>
+        </VAR>
+
+        <VAR label="ue_security_context_updated">
+            <datatype>boolean</datatype>
+            <controltype>state</controltype>
+            <possiblevalues>TRUE,FALSE</possiblevalues>
+            <initialvalue>FALSE</initialvalue>
+        </VAR>
+
+        <VAR label="mme_security_context_exist">
+            <datatype>boolean</datatype>
+            <controltype>state</controltype>
+            <possiblevalues>TRUE,FALSE</possiblevalues>
+            <initialvalue>FALSE</initialvalue>
+        </VAR>
+
+        <VAR label="mme_security_context_updated">
+            <datatype>boolean</datatype>
+            <controltype>state</controltype>
+            <possiblevalues>TRUE,FALSE</possiblevalues>
+            <initialvalue>FALSE</initialvalue>
+        </VAR>
+        
+        <VAR label="mme_attach_completed">
+            <datatype>boolean</datatype>
+            <controltype>state</controltype>
+            <possiblevalues>TRUE,FALSE</possiblevalues>
+            <initialvalue>FALSE</initialvalue>
+        </VAR>
+
+        <VAR label="mme_wait_for">
+            <datatype>enumerate</datatype>
+            <controltype>state</controltype>
+            <possiblevalues>null, attach_request, id_response, auth_response, sm_response, attach_response, tau_response, service_response, guti_reallocation_response</possiblevalues>
+            <initialvalue>null</initialvalue>
+        </VAR>
+    </VARS>
+
+
+    <sequence_numbers>
+        
+        <seq_num>
+            <seq_name>mme_seq</seq_name>
+            <start> 0 </start>
+            <end> 31 </end>
+            <possiblevalues> 
+                ((mme_seq + 1) mod 32), ue_seq + 1
+            </possiblevalues> 
+        </seq_num>
+        
+        <seq_num>
+            <seq_name>ue_seq</seq_name>
+            <start> 0 </start>
+            <end> 31 </end> 
+            <possiblevalues>
+                ((mme_ue_shared_seq + 1) mod 32)
+            </possiblevalues>
+        </seq_num>
+
+        <seq_num>
+            <seq_name>mme_ue_shared_seq</seq_name>
+            <start> 0 </start>
+            <end> 31 </end> 
+            <possiblevalues>
+                next(mme_seq)
+            </possiblevalues>
+        
+        </seq_num>
+        
+        <seq_num>
+            <seq_name>ue_auth_fail_count</seq_name>
+            <start> 0 </start>
+            <end> 5 </end> 
+            <possiblevalues>
+                ue_auth_fail_count + 1, 0 
+            </possiblevalues>
+        </seq_num>
+
+        <seq_num>
+            <seq_name>mme_auth_fail_count</seq_name>
+            <start> 0 </start>
+            <end> 5 </end> 
+            <possiblevalues>
+                mme_auth_fail_count + 1, 0 
+            </possiblevalues>
+        </seq_num>
+        <seq_num>
+            <seq_name>ue_sm_reject_count</seq_name>
+            <start> 0 </start>
+            <end> 5 </end> 
+            <possiblevalues>
+                ue_sm_reject_count + 1, 0 
+            </possiblevalues>
+        </seq_num>
+        <seq_num>
+            <seq_name>mme_sm_reject_count</seq_name>
+            <start> 0 </start>
+            <end> 5 </end> 
+            <possiblevalues>
+                mme_sm_reject_count + 1, 0 
+            </possiblevalues>
+        </seq_num>
+    </sequence_numbers>
+
+    
+    <FSMs>
+        <FSM label="UE">
+        
+            <states>
+                <state> ue_deregistered</state>
+                <state> ue_register_initiated</state>
+                <state> ue_registered</state>
+                <state> ue_detach_initiated </state>
+                <state> ue_tau_initiated</state>
+                <state> ue_service_initiated</state>
+                <state> ue_idle</state>
+            </states>
+            
+            <init_state>ue_deregistered</init_state>
+
+            <transitions>
+            
+                <transition label="ue_T1">
+                    <start>ue_deregistered</start>
+                    <end>ue_deregistered</end>
+                    <condition> inactivity_timer_expired &amp; !mobile_restart &amp; !ue_detach_requested</condition>
+                    <actions>
+                        <action label="ue_security_context_exist = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_attach_completed = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="paging_IMSI_received=FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                       
+                    </actions>
+                </transition>
+                
+                <transition label="ue_T2">
+                    <start>ue_deregistered</start>
+                    <end>ue_register_initiated</end>
+                    <condition> mobile_restart &amp; !ue_detach_requested</condition>
+                    <actions>
+                        <action label="attach_req">
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="paging_IMSI_received=FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        
+                        <action label="ue_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_attach_completed = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_mme = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+                
+
+                <transition label="ue_T3">
+                    <start>ue_deregistered</start>
+                    <end>ue_deregistered</end>
+                    <condition> (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) &amp; ! mobile_restart &amp; !ue_detach_requested</condition>
+                    <actions>
+                        <action label="ue_security_context_exist = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                     </actions>
+                </transition>
+               
+                <transition label="ue_T4">
+                    <start>ue_register_initiated</start>
+                    <end>ue_register_initiated</end>
+                    <condition> mobile_restart &amp; !ue_detach_requested</condition>
+                    <actions>
+                        <action label="attach_req"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_attach_completed = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_mme = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition> 
+                
+                <transition label="ue_T5">
+                    <start>ue_register_initiated</start>
+                    <end>ue_deregistered</end>
+                    <condition> (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) &amp; ! mobile_restart &amp; !ue_detach_requested</condition>
+                    <actions>
+                        
+                        <action label="ue_security_context_exist = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+                </transition>
+
+                <transition label="ue_T6">
+                    <start>ue_register_initiated</start>
+                    <end>ue_detach_initiated</end>
+                    <condition>ue_detach_requested &amp; !mobile_restart</condition>
+                    <actions>
+                        <action label="detach_req"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+                </transition>
+                
+                <transition label="ue_T7">
+                    <start>ue_register_initiated</start>
+                    <end>ue_register_initiated</end>
+                    <condition> chan_MU=chanMU_id_request &amp; !mobile_restart &amp; !ue_detach_requested</condition>
+                    <actions>
+                        <action label="id_response"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+
+                </transition>
+
+                <transition label="ue_T8">
+                    <start>ue_register_initiated</start>
+                    <end>ue_register_initiated</end>
+                    <condition> chan_MU=chanMU_auth_request &amp; auth_req_mac_failure  &amp; ! mobile_restart &amp; !ue_detach_requested</condition>
+                    <actions>
+                        <action label="auth_mac_failure"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="ue_auth_fail_count = ue_auth_fail_count + 1"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_mme = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+                </transition>
+
+                <transition label="ue_T9">
+                    <start>ue_register_initiated</start>
+                    <end>ue_register_initiated</end>
+                    
+                    <condition> chan_MU=chanMU_auth_request &amp; !auth_req_mac_failure &amp; !seq_check &amp; ue_auth_fail_count_check &amp; ! mobile_restart &amp; !ue_detach_requested</condition> --&gt;
+                    <actions>
+                        <action label="auth_sync_failure"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_seq = ue_seq + 1">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_fail_count = ue_auth_fail_count + 1"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_mme = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+                
+                <transition label="ue_T10">
+                    <start>ue_register_initiated</start>
+                    <end>ue_deregistered</end>
+                    <condition> chan_MU=chanMU_auth_request &amp; !auth_req_mac_failure &amp; !seq_check &amp; ! ue_auth_fail_count_check &amp; ! mobile_restart &amp; !ue_detach_requested</condition>
+                    
+                    <actions>
+                        <action label="auth_sync_failure"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="mme_seq = ue_seq + 1">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_auth_fail_count = ue_auth_fail_count + 1"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="downgrade_to_3G"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_auth_mme = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+                
+                                
+                <transition label="ue_T11">
+                    <start>ue_register_initiated</start>
+                    <end>ue_register_initiated</end>
+                    <condition> chan_MU=chanMU_auth_request &amp; !auth_req_mac_failure &amp; seq_check &amp; ! mobile_restart &amp; !ue_detach_requested</condition>
+                    <actions>
+                        <action label="auth_response">
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="ue_seq = ((mme_ue_shared_seq + 1) mod 32)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_auth_fail_count = 0"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_auth_mme = TRUE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                
+                <transition label="ue_T12">
+                    <start>ue_register_initiated</start>
+                    <end>ue_register_initiated</end>
+                    <condition> (chan_MU=chanMU_security_mode_command &amp; ue_auth_mme &amp; !sm_command_mac_failure &amp; !security_capabilities_mismatch &amp; ! mobile_restart &amp; !ue_detach_requested)</condition>
+                    <actions>
+                        <action label="sm_complete"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="ue_security_context_updated = TRUE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_security_context_exist = TRUE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+               
+                <transition label="ue_T13">
+                    <start>ue_register_initiated</start>
+                    <end>ue_register_initiated</end>
+                    <condition> (chan_MU=chanMU_security_mode_command  &amp; ue_auth_mme &amp; (sm_command_mac_failure | security_capabilities_mismatch)  &amp; ! mobile_restart &amp; !ue_detach_requested)</condition>
+                    <actions>
+                        <action label="sm_reject">
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_sm_reject_count = ue_sm_reject_count + 1">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                
+                <transition label="ue_T14">
+                    <start>ue_register_initiated</start>
+                    <end>ue_registered</end>
+                    <condition> (chan_MU=chanMU_attach_accept  &amp; ue_auth_mme &amp; ue_security_context_exist &amp; ! mobile_restart &amp; !ue_detach_requested)</condition>
+                    <actions>
+                        <action label="attach_complete"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_attach_completed=TRUE">
+                            <channel label="internal"> 
+                            <start>UE</start>
+                            <end>UE</end>
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+
+
+                <transition label="ue_T15">
+                    <start>ue_registered</start>
+                    <end>ue_register_initiated</end>
+                    <condition> mobile_restart &amp; !ue_detach_requested  &amp; !ta_changed &amp; !ue_inactivity_detected</condition>
+                    <actions>
+                        <action label="attach_req">
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_attach_completed = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition> 
+
+                <transition label="ue_T16">
+                    <start>ue_registered</start>
+                    <end>ue_deregistered</end>
+                    <condition> (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) &amp; !mobile_restart &amp; !ue_detach_requested &amp; !ta_changed &amp; !ue_inactivity_detected</condition>
+                    <actions>
+                        <action label="ue_security_context_exist = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="ue_T17">
+                    <start>ue_registered</start>
+                    <end>ue_detach_initiated</end>
+                    <condition>ue_detach_requested &amp; !mobile_restart  &amp; !ta_changed &amp; !ue_inactivity_detected</condition>
+                    <actions>
+                        <action label="detach_req"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="ue_T18">
+                    <start>ue_registered</start>
+                    <end>ue_registered</end>
+                    <condition> chan_MU=chanMU_id_request &amp; !mobile_restart &amp; !ue_detach_requested &amp; !ue_inactivity_detected</condition>
+                    <actions>
+                        <action label="id_response"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+                
+                <transition label="ue_T19">
+                    <start>ue_registered</start>
+                    <end>ue_registered</end>
+                    <condition> chan_MU=chanMU_auth_request &amp; auth_req_mac_failure  &amp; ! mobile_restart  &amp; !ue_detach_requested &amp; !ta_changed  &amp; !ue_inactivity_detected</condition>
+                    <actions>
+                        <action label="auth_mac_failure"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="ue_auth_fail_count = ue_auth_fail_count + 1"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        
+                    </actions>
+                </transition>
+
+                <transition label="ue_T20">
+                    <start>ue_registered</start>
+                    <end>ue_registered</end>
+                    
+                    <condition> chan_MU=chanMU_auth_request &amp; !auth_req_mac_failure &amp; !seq_check &amp; ue_auth_fail_count_check &amp; ! mobile_restart &amp; !ue_detach_requested &amp; !ta_changed  &amp; !ue_inactivity_detected</condition> 
+                    <actions>
+                        <action label="auth_sync_failure"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_seq = ue_seq + 1">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_fail_count = ue_auth_fail_count + 1"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                      
+                    </actions>
+                </transition>
+                
+                <transition label="ue_T21">
+                    <start>ue_registered</start>
+                    <end>ue_deregistered</end>
+                    <condition> chan_MU=chanMU_auth_request &amp; !auth_req_mac_failure &amp; !seq_check &amp; ! ue_auth_fail_count_check &amp; ! mobile_restart &amp; !ue_detach_requested</condition>
+                    
+                    <actions>
+                        <action label="auth_sync_failure"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="mme_seq = ue_seq + 1">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_auth_fail_count = ue_auth_fail_count + 1"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="downgrade_to_3G"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        
+                    </actions>
+                </transition>
+                
+                                
+                <transition label="ue_T22">
+                    <start>ue_registered</start>
+                    <end>ue_registered</end>
+                    <condition> chan_MU=chanMU_auth_request &amp; !auth_req_mac_failure &amp; seq_check &amp; ! mobile_restart &amp; !ue_detach_requested &amp; !ta_changed  &amp; !ue_inactivity_detected</condition>
+                    <actions>
+                        <action label="auth_response">
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="ue_seq = ((mme_ue_shared_seq + 1) mod 32)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_auth_fail_count = 0"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                       
+                    </actions>
+                </transition>
+
+                <transition label="ue_T23">
+                    <start>ue_registered</start>
+                    <end>ue_registered</end>
+                    <condition> (chan_MU=chanMU_security_mode_command &amp; !sm_command_mac_failure &amp; !security_capabilities_mismatch &amp; ! mobile_restart &amp; !ue_detach_requested &amp; !ta_changed &amp; !ue_inactivity_detected)</condition>
+                    <actions>
+                        <action label="sm_complete"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_security_context_updated = TRUE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+                </transition>
+
+                <transition label="ue_T24">
+                    <start>ue_registered</start>
+                    <end>ue_registered</end>
+                    <condition> (chan_MU=chanMU_security_mode_command &amp; (sm_command_mac_failure | security_capabilities_mismatch)  &amp; ! mobile_restart &amp; !ue_detach_requested &amp; !ta_changed &amp; !ue_inactivity_detected)</condition>
+                    <actions>
+                        <action label="sm_reject">
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_sm_reject_count = ue_sm_reject_count + 1">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="ue_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="ue_T25">
+                    <start>ue_registered</start>
+                    <end>ue_registered</end>
+                    <condition> (chan_MU=chanMU_attach_accept &amp; ! mobile_restart &amp; !ue_detach_requested)</condition>
+                    <actions>
+                        <action label="attach_complete"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_attach_completed=TRUE">
+                            <channel label="internal"> 
+                            <start>UE</start>
+                            <end>UE</end>
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+    
+                <transition label="ue_T26">
+                    <start>ue_registered</start>
+                    <end>ue_registered</end>
+                    <condition> (chan_MU=chanMU_guti_reallocation_command &amp; security_context_matched &amp; ! mobile_restart &amp; !ue_detach_requested)</condition>
+                    <actions>
+                        <action label="guti_reallocation_complete"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="ue_T27">
+                    <start>ue_registered</start>
+                    <end>ue_registered</end>
+                    <condition> (chan_MU=chanMU_guti_reallocation_command &amp; !security_context_matched &amp; ! mobile_restart &amp; !ue_detach_requested)</condition>
+                    <actions>
+                        <action label="null_action"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="ue_T28">
+                    <start>ue_registered</start>
+                    <end>ue_tau_initiated</end>
+                    <condition> ta_changed &amp; !mobile_restart &amp; !ue_detach_requested &amp; !ue_inactivity_detected</condition>
+                    
+                    <actions>
+                        <action label="tau_request"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="ue_T29">
+                    <start>ue_registered</start>
+                    <end>ue_idle</end>
+                    <condition> ue_security_context_exist &amp; ue_attach_completed &amp; ue_inactivity_detected  &amp; !mobile_restart &amp; !ue_detach_requested &amp; !ta_changed</condition>
+                    <actions>
+                        <action label="null_action"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                
+                <transition label="ue_T30">
+                    <start>ue_tau_initiated</start>
+                    <end>ue_register_initiated</end>
+                    <condition> mobile_restart &amp; !ue_detach_requested &amp; !ta_changed</condition>
+                    <actions>
+                        <action label="attach_req">
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_attach_completed = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition> 
+
+                <transition label="ue_T31">
+                    <start>ue_tau_initiated</start>
+                    <end>ue_deregistered</end>
+                    <condition> (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) &amp; !mobile_restart &amp; !ue_detach_requested &amp; !ta_changed</condition>
+                    <actions>
+                        <action label="ue_security_context_exist = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="ue_T32">
+                    <start>ue_tau_initiated</start>
+                    <end>ue_detach_initiated</end>
+                    <condition>ue_detach_requested &amp; !mobile_restart  &amp; !ta_changed</condition>
+                    <actions>
+                        <action label="detach_req"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="ue_T33">
+                    <start>ue_tau_initiated</start>
+                    <end>ue_tau_initiated</end>
+                    <condition> chan_MU=chanMU_id_request &amp; !mobile_restart &amp; !ue_detach_requested &amp; !ta_changed </condition>
+                    <actions>
+                        <action label="id_response"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                
+                <transition label="ue_T34">
+                    <start>ue_tau_initiated</start>
+                    <end>ue_tau_initiated</end>
+                    <condition> ta_changed &amp; !mobile_restart &amp;ue_detach_requested</condition>
+                    
+                    <actions>
+                        <action label="tau_request"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                
+                <transition label="ue_T35">
+                    <start>ue_tau_initiated</start>
+                    <end>ue_tau_initiated</end>
+                    <condition> chan_MU=chanMU_auth_request &amp; auth_req_mac_failure  &amp; ! mobile_restart  &amp; !ue_detach_requested &amp; !ta_changed </condition>
+                    <actions>
+                        <action label="auth_mac_failure"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="ue_auth_fail_count = ue_auth_fail_count + 1"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                      
+                    </actions>
+                </transition>
+
+                <transition label="ue_T36">
+                    <start>ue_tau_initiated</start>
+                    <end>ue_tau_initiated</end>
+                    
+                    <condition> chan_MU=chanMU_auth_request &amp; !auth_req_mac_failure &amp; !seq_check &amp; ue_auth_fail_count_check &amp; ! mobile_restart &amp; !ue_detach_requested &amp; !ta_changed</condition> 
+                    <actions>
+                        <action label="auth_sync_failure"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_seq = ue_seq + 1">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_fail_count = ue_auth_fail_count + 1"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                    </actions>
+                </transition>
+                
+                                
+                <transition label="ue_T37">
+                    <start>ue_tau_initiated</start>
+                    <end>ue_tau_initiated</end>
+                    <condition> chan_MU=chanMU_auth_request &amp; !auth_req_mac_failure &amp; seq_check &amp; ! mobile_restart &amp; !ue_detach_requested &amp; !ta_changed</condition>
+                    <actions>
+                        <action label="auth_response">
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="ue_seq = ((mme_ue_shared_seq + 1) mod 32)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_auth_fail_count = 0"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                      
+                    </actions>
+                </transition>
+
+                <transition label="ue_T38">
+                    <start>ue_tau_initiated</start>
+                    <end>ue_tau_initiated</end>
+                    <condition> (chan_MU=chanMU_security_mode_command &amp; !sm_command_mac_failure &amp; !security_capabilities_mismatch &amp; ! mobile_restart &amp; !ue_detach_requested &amp; !ta_changed &amp; !ue_inactivity_detected)</condition>
+                    <actions>
+                        <action label="sm_complete"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_security_context_updated = TRUE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+                </transition>
+
+                <transition label="ue_T39">
+                    <start>ue_tau_initiated</start>
+                    <end>ue_tau_initiated</end>
+                    <condition> (chan_MU=chanMU_security_mode_command &amp; (sm_command_mac_failure | security_capabilities_mismatch)  &amp; ! mobile_restart &amp; !ue_detach_requested &amp; !ta_changed)</condition>
+                    <actions>
+                        <action label="sm_reject">
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+
+                        <action label="ue_sm_reject_count = ue_sm_reject_count + 1">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="ue_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+
+                <transition label="ue_T40">
+                    <start>ue_tau_initiated</start>
+                    <end>ue_registered</end>
+                    <condition> chan_MU=chanMU_tau_accept &amp; !mobile_restart  &amp; !ta_changed &amp;ue_detach_requested</condition>
+                    <actions>
+                        <action label="tau_complete"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+
+                <transition label="ue_T41">
+                    <start>ue_detach_initiated</start>
+                    <end>ue_register_initiated</end>
+                    <condition> mobile_restart &amp; !ue_detach_requested</condition>
+                    <actions>
+                        <action label="attach_req">
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_security_context_exist=FALSE">
+                            <channel label="internal"> 
+                            <start>UE</start>
+                            <end>UE</end>
+                            </channel>  
+                        </action>
+                        <action label="ue_attach_completed = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition> 
+
+
+
+                <transition label="ue_T42">
+                    <start>ue_detach_initiated</start>
+                    <end>ue_detach_initiated</end>
+                    <condition>ue_detach_requested &amp; !mobile_restart</condition>
+                    <actions>
+                        <action label="detach_req"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="ue_T43">
+                    <start>ue_detach_initiated</start>
+                    <end>ue_deregistered</end>
+                    <condition> (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU=chanMU_service_reject) &amp; !mobile_restart &amp; !ue_detach_requested</condition>
+                    <actions>
+                        <action label="ue_security_context_exist = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+
+                <transition label="ue_T44">
+                    <start>ue_idle</start>
+                    <end>ue_deregistered</end>
+                    <condition> (chan_MU=chanMU_paging_IMSI &amp; paging_occasion &amp; !mobile_restart)</condition>
+                    <actions>
+                        <action label="paging_IMSI_received=TRUE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="ue_T45">
+                    <start>ue_idle</start>
+                    <end>ue_service_initiated</end>
+                    <condition> (chan_MU=chanMU_paging_GUTI &amp; paging_occasion &amp; !mobile_restart)</condition>
+                    <actions>
+                        <action label="service_request"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+
+
+                <transition label="ue_T46">
+                    <start>ue_service_initiated</start>
+                    <end>ue_register_initiated</end>
+                    <condition> mobile_restart &amp; !ue_detach_requested </condition>
+                    <actions>
+                        <action label="attach_req">
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="ue_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                        <action label="ue_attach_completed = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition> 
+
+                <transition label="ue_T47">
+                    <start>ue_service_initiated</start>
+                    <end>ue_detach_initiated</end>
+                    <condition>ue_detach_requested &amp; !mobile_restart</condition>
+                    <actions>
+                        <action label="detach_req"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="ue_T48">
+                    <start>ue_service_initiated</start>
+                    <end>ue_deregistered</end>
+                    <condition> (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU=chanMU_service_reject) &amp; !mobile_restart &amp; !ue_detach_requested</condition>
+                    <actions>
+                        <action label="ue_security_context_exist = FALSE"> 
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+                <transition label="ue_T49">
+                    <start>ue_service_initiated</start>
+                    <end>ue_registered</end>
+                    <condition> (chan_MU = chanMU_service_complete &amp; !mobile_restart  &amp; !ue_detach_requested)</condition>
+                    <actions>
+                        <action label="null_action"> 
+                            <channel label="chan_UM">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+            </transitions>
+
+        </FSM>
+
+
+        <FSM label="MME">
+            <states>
+                <state> mme_deregistered</state>
+                <state> mme_register_initiated</state>
+                <state> mme_registered</state>
+                <state> mme_idle</state>
+                <state> mme_tau_initiated</state>
+                <state> mme_service_initiated</state>
+            </states>
+            <init_state>mme_deregistered</init_state>
+            <transitions>
+
+                <transition label="mme_T1">
+                    <start>mme_deregistered</start>
+                    <end>mme_deregistered</end>
+                    <condition> mme_network_detach </condition>
+                    <actions>
+                        <action label="network_detach_req">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T2">
+                    <start>mme_deregistered</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_attach_req &amp; esm_failure &amp; !mme_network_detach</condition>
+                    <actions>
+                        <action label="attach_reject">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T3">
+                    <start>mme_deregistered</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_attach_req &amp; !esm_failure &amp; !id_request_required &amp; ! mme_network_detach </condition>
+                    <actions>
+                        <action label="auth_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_wait_for = auth_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_ue_shared_seq = next(mme_seq)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_seq = ((mme_seq + 1) mod 32)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="mme_security_context_exist= FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated= FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_attach_completed= FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="mme_sm_reject_count= 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                    </actions>
+                </transition>
+
+                <transition label="mme_T4">
+                    <start>mme_deregistered</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_attach_req &amp; !esm_failure &amp; id_request_required  &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="id_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = id_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T5">
+                    <start>mme_register_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition>mme_network_detach</condition>
+                    <actions>
+                        <action label="network_detach_req">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                        
+                    </actions>
+                </transition>
+
+                <transition label="mme_T6">
+                    <start>mme_register_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_detach_req  &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="detach_accept"> 
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+                </transition>
+
+                <transition label="mme_T7">
+                    <start>mme_register_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_attach_req &amp; esm_failure  &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="attach_reject">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+                </transition>
+
+                <transition label="mme_T8">
+                    <start>mme_register_initiated</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_attach_req &amp; !esm_failure &amp; !id_request_required  &amp; !mme_security_context_exist &amp; !mme_attach_completed &amp; ! mme_network_detach </condition>
+                    <actions>
+                        <action label="auth_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_wait_for = auth_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_ue_shared_seq = next(mme_seq)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_seq = ((mme_seq + 1) mod 32)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="mme_security_context_exist= FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated= FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_sm_reject_count= 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                
+                <transition label="mme_T9">
+                    <start>mme_register_initiated</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_attach_req &amp; !esm_failure &amp; !id_request_required  &amp; mme_security_context_exist &amp; mme_attach_completed &amp; ! mme_network_detach </condition>
+                    <actions>
+                        <action label="attach_accept">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = attach_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T10">
+                    <start>mme_register_initiated</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_attach_req &amp; !esm_failure &amp; id_request_required  &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="id_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_wait_for = id_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_ue_shared_seq = next(mme_seq)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_seq = ((mme_seq + 1) mod 32)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="mme_security_context_exist= FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated= FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_sm_reject_count= 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                    </actions>
+                </transition>
+
+
+                <transition label="mme_T11">
+                    <start>mme_register_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition>chan_UM=chanUM_attach_req &amp; !mme_auth_fail_count_check  &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="attach_reject"> 
+                        <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T12">
+                    <start>mme_register_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_auth_mac_failure &amp; mme_wait_for=auth_response &amp; GUTI_IMSI_mapping_correct  &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="auth_reject">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T13">
+                    <start>mme_register_initiated</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_auth_mac_failure &amp; mme_wait_for=auth_response &amp; !GUTI_IMSI_mapping_correct  &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="id_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = id_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="(mme_auth_fail_count = mme_auth_fail_count + 1)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+                
+                <transition label="mme_T14">
+                    <start>mme_register_initiated</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_id_response  &amp; mme_wait_for=id_response &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="auth_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = auth_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>                    
+                    </actions>
+                </transition>
+             
+                
+              
+                <transition label="mme_T15">
+                    <start>mme_register_initiated</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_auth_sync_failure &amp; mme_wait_for=auth_response &amp; mme_auth_fail_count_check &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="auth_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = auth_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_auth_fail_count = mme_auth_fail_count + 1">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_ue_shared_seq = next(mme_seq)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_seq = ((mme_seq + 1) mod 32)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+                </transition>
+
+                
+                <transition label="mme_T16">
+                    <start>mme_register_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_auth_sync_failure &amp; mme_wait_for=auth_response &amp; !mme_auth_fail_count_check &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="auth_reject">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+                </transition>
+
+                <transition label="mme_T17">
+                    <start>mme_register_initiated</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_auth_response &amp; mme_wait_for=auth_response &amp; xres_matched_sres &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="security_mode_command"> 
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = sm_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T18">
+                    <start>mme_register_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_auth_response &amp; mme_wait_for=auth_response &amp; !xres_matched_sres &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="auth_reject"> 
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel> 
+                        </action>
+                        
+                    </actions>
+                </transition>
+                
+                <transition label="mme_T19">
+                    <start>mme_register_initiated</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_sm_reject &amp; mme_wait_for=sm_response &amp; mme_sm_reject_count_check  &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="security_mode_command">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="mme_wait_for = sm_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_sm_reject_count = mme_sm_reject_count + 1">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T20">
+                    <start>mme_register_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_sm_reject &amp; mme_wait_for=sm_response &amp; !mme_sm_reject_count_check &amp; !mme_security_context_exist &amp; ! mme_network_detach</condition>
+                    <actions>
+                        <action label="attach_reject">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T21">
+                    <start>mme_register_initiated</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_sm_reject &amp; mme_wait_for=sm_response &amp; !mme_sm_reject_count_check &amp; mme_security_context_exist &amp; ! mme_network_detach</condition>
+                    <actions>
+                    <action label="attach_accept">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel> 
+                        </action>
+
+                        <action label="mme_wait_for = attach_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                        <action label="mme_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T22">
+                    <start>mme_register_initiated</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_sm_complete &amp; mme_wait_for=sm_response &amp; !mme_network_detach</condition>
+                    <actions>
+                        <action label="attach_accept">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel> 
+                        </action>
+                        <action label="mme_wait_for = attach_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_exist = TRUE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated = TRUE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+
+                <transition label="mme_T23">
+                    <start>mme_register_initiated</start>
+                    <end>mme_registered</end>
+                    <condition> chan_UM=chanUM_attach_complete &amp; mme_wait_for=attach_response &amp; !mme_network_detach</condition>
+                    <actions>
+                        <action label="mme_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                       
+                        <action label="mme_attach_completed = TRUE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                    </actions>
+                </transition>
+
+                <transition label="mme_T24">
+                    <start>mme_registered</start>
+                    <end>mme_deregistered</end>
+                    <condition> mme_network_detach  &amp; !ue_inactivity_detected &amp; !mme_auth_required &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="network_detach_req">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T25">
+                    <start>mme_registered</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_detach_req  &amp; ! mme_network_detach &amp; !ue_inactivity_detected &amp; !mme_auth_required &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="detach_accept"> 
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+               <transition label="mme_T26">
+                    <start>mme_registered</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_attach_req &amp; esm_failure &amp; ! mme_network_detach &amp; !ue_inactivity_detected &amp; !mme_auth_required &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="attach_reject">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                
+                <transition label="mme_T27">
+                    <start>mme_registered</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_attach_req &amp; !esm_failure &amp; !id_request_required  &amp; !mme_security_context_exist &amp; !mme_attach_completed &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !mme_auth_required &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="auth_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_ue_shared_seq = next(mme_seq)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_seq = ((mme_seq + 1) mod 32)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="mme_security_context_exist= FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated= FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_sm_reject_count= 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                    </actions>
+                </transition>
+
+                
+                <transition label="mme_T28">
+                    <start>mme_registered</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_attach_req &amp; !esm_failure &amp; !id_request_required  &amp; mme_security_context_exist &amp; mme_attach_completed &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !mme_auth_required &amp; !cipher_suite_change  &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="attach_accept">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T29">
+                    <start>mme_registered</start>
+                    <end>mme_register_initiated</end>
+                    <condition> chan_UM=chanUM_attach_req &amp; !esm_failure &amp; id_request_required  &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !mme_auth_required &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="id_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_wait_for = id_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_ue_shared_seq = next(mme_seq)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_seq = ((mme_seq + 1) mod 32)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                        <action label="mme_security_context_exist= FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated= FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_sm_reject_count= 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                    </actions>
+                </transition>
+
+                <transition label="mme_T30">
+                    <start>mme_registered</start>
+                    <end>mme_registered</end>
+                    <condition> mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="auth_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = auth_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_ue_shared_seq = next(mme_seq)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_seq = ((mme_seq + 1) mod 32)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_auth_fail_count = 0">
+                            <channel label="internal">
+                            <start>UE</start>
+                            <end>MME</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+                
+                <transition label="mme_T31">
+                    <start>mme_registered</start>
+                    <end>mme_registered</end>
+                    <condition> GUTI_reallocation_required &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change</condition>
+                    <actions>
+                        <action label="guti_rellocation_command">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_wait_for = guti_reallocation_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T32">
+                    <start>mme_registered</start>
+                    <end>mme_registered</end>
+                    <condition> chan_UM=chanUM_guti_reallocation_complete &amp; mme_wait_for=guti_reallocation_response &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="null_action">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+                </transition>
+
+                <transition label="mme_T33">
+                    <start>mme_registered</start>
+                    <end>mme_registered</end>
+                    <condition> chan_UM=chanUM_auth_mac_failure &amp; mme_wait_for=auth_response &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change  &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="(mme_auth_fail_count = mme_auth_fail_count + 1)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="auth_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+
+                        <action label="mme_wait_for = auth_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+                
+                <transition label="mme_T34">
+                    <start>mme_registered</start>
+                    <end>mme_registered</end>
+                    <condition> chan_UM=chanUM_auth_sync_failure &amp; mme_auth_fail_count_check &amp;  !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="auth_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = auth_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_auth_fail_count = mme_auth_fail_count + 1">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_ue_shared_seq = next(mme_seq)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_seq = ((mme_seq + 1) mod 32)">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                
+                <transition label="mme_T35">
+                    <start>mme_registered</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_auth_sync_failure &amp; mme_wait_for=auth_response &amp; !mme_auth_fail_count_check  &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="auth_reject">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        
+                    </actions>
+                </transition>
+
+                <transition label="mme_T36">
+                    <start>mme_registered</start>
+                    <end>mme_registered</end>
+                    <condition> chan_UM=chanUM_auth_response &amp; mme_wait_for=auth_response &amp; xres_matched_sres &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="security_mode_command"> 
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = sm_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T37">
+                    <start>mme_registered</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_auth_response &amp; mme_wait_for=auth_response &amp; !xres_matched_sres &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="auth_reject"> 
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel> 
+                        </action>
+                        
+                    </actions>
+                </transition>
+                
+                <transition label="mme_T38">
+                    <start>mme_registered</start>
+                    <end>mme_registered</end>
+                    <condition> cipher_suite_change &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="security_mode_command"> 
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel> 
+                        </action>
+                        <action label="mme_wait_for = sm_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+                
+                <transition label="mme_T39">
+                    <start>mme_registered</start>
+                    <end>mme_registered</end>
+                    <condition> chan_UM=chanUM_sm_reject &amp; mme_wait_for=sm_response &amp; mme_sm_reject_count_check &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="security_mode_command">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = sm_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_sm_reject_count = mme_sm_reject_count + 1">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T40">
+                    <start>mme_registered</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_sm_reject &amp; mme_wait_for=sm_response &amp; !mme_sm_reject_count_check &amp; !mme_security_context_exist &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="mme_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T41">
+                    <start>mme_registered</start>
+                    <end>mme_registered</end>
+                    <condition> chan_UM=chanUM_sm_reject &amp; mme_wait_for=sm_response &amp; !mme_sm_reject_count_check &amp; mme_security_context_exist &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                    <action label="attach_accept">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel> 
+                        </action>
+                        <action label="mme_wait_for = attach_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated = FALSE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T42">
+                    <start>mme_registered</start>
+                    <end>mme_registered</end>
+                    <condition> chan_UM=chanUM_sm_complete &amp; mme_wait_for=sm_response &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change</condition>
+                    <actions>
+                        <action label="mme_sm_reject_count = 0">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_exist = TRUE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_security_context_updated = TRUE">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T43">
+                    <start>mme_registered</start>
+                    <end>mme_tau_initiated</end>
+                    <condition> chan_UM=chanUM_tau_request &amp; !mme_auth_required &amp; ! mme_network_detach  &amp; !ue_inactivity_detected &amp; !cipher_suite_change &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="id_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                        <action label="mme_wait_for = id_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T44">
+                    <start>mme_registered</start>
+                    <end>mme_idle</end>
+                    <condition> mme_security_context_exist &amp; ue_inactivity_detected &amp; !mme_auth_required &amp; ! mme_network_detach &amp; !cipher_suite_change</condition> 
+                    <actions>
+                        <action label="null_action">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+
+
+                <transition label="mme_T45">
+                    <start>mme_tau_initiated</start>
+                    <end>mme_tau_initiated</end>
+                    <condition>id_request_required &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="id_request">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = id_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T46">
+                    <start>mme_tau_initiated</start>
+                    <end>mme_tau_initiated</end>
+                    <condition>GUTI_reallocation_required &amp; !id_request_required </condition>
+                    <actions>
+                        <action label="guti_reallocation_command">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                        <action label="mme_wait_for = guti_reallocation_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T47">
+                    <start>mme_tau_initiated</start>
+                    <end>mme_tau_initiated</end>
+                    <condition> chan_UM=chanUM_guti_reallocation_complete &amp; mme_wait_for=guti_reallocation_response &amp; !tau_failure &amp; !id_request_required &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="tau_accpet">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                        <action label="mme_wait_for = tau_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T48">
+                    <start>mme_tau_initiated</start>
+                    <end>mme_tau_initiated</end>
+                    <condition> chan_UM=chanUM_id_response &amp; mme_wait_for=id_response &amp; !tau_failure &amp; !id_request_required &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="tau_accpet">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                        <action label="mme_wait_for = tau_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T49">
+                    <start>mme_tau_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM=chanUM_id_response &amp; mme_wait_for=id_response &amp; tau_failure &amp; !id_request_required &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="tau_reject">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T50">
+                    <start>mme_tau_initiated</start>
+                    <end>mme_tau_initiated</end>
+                    <condition> !id_request_required &amp; !tau_failure &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="tau_accept">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+                
+
+                <transition label="mme_T51">
+                    <start>mme_tau_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition> !id_request_required &amp; !GUTI_reallocation_required &amp; tau_failure</condition>
+                    <actions>
+                        <action label="tau_reject">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T52">
+                    <start>mme_tau_initiated</start>
+                    <end>mme_registered</end>
+                    <condition> chan_UM=chanUM_tau_complete &amp; mme_wait_for=tau_response  &amp; !id_request_required &amp; !GUTI_reallocation_required</condition>
+                    <actions>
+                        <action label="null_action">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+
+
+                <transition label="mme_T53">
+                    <start>mme_idle</start>
+                    <end>mme_deregistered</end>
+                    <condition> paging_IMSI_required &amp; paging_occasion</condition> 
+                    <actions>
+                        <action label="paging_IMSI">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T54">
+                    <start>mme_idle</start>
+                    <end>mme_service_initiated</end>
+                    <condition> paging_GUTI_required &amp; paging_occasion </condition> 
+                    <actions>
+                        <action label="paging_GUTI">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                        <action label="mme_wait_for = service_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T55">
+                    <start>mme_idle</start>
+                    <end>mme_tau_initiated</end>
+                    <condition> chan_UM = chanUM_tau_request &amp; !paging_occasion</condition> 
+                    <actions>
+                        <action label="id_requested">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                        <action label="mme_wait_for = id_response">
+                            <channel label="internal">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>
+                        </action>
+                    </actions>
+                </transition>
+
+                <transition label="mme_T56">
+                    <start>mme_service_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition> mme_network_detach</condition>
+                    <actions>
+                        <action label="network_detach_req">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+
+                
+                <transition label="mme_T57">
+                    <start>mme_service_initiated</start>
+                    <end>mme_registered</end>
+                    <condition> chan_UM = chanUM_service_request &amp; mme_wait_for=service_response &amp; service_completed &amp; !mme_network_detach</condition> 
+                    <actions>
+                        <action label="service_complete">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>
+            
+                <transition label="mme_T58">
+                    <start>mme_service_initiated</start>
+                    <end>mme_deregistered</end>
+                    <condition> chan_UM = chanUM_service_request &amp; mme_wait_for=service_response &amp; !service_completed &amp; ! mme_network_detach</condition> 
+                    <actions>
+                        <action label="service_reject">
+                            <channel label="chan_MU">
+                            <start>MME</start>
+                            <end>UE</end> 
+                            </channel>  
+                        </action>
+                    </actions>
+                </transition>    
+            </transitions>
+
+        </FSM>
+
+    </FSMs>
+
+
+    <channels>
+        <channel label="chan_UM"> 
+            <start>UE</start>   
+            <end>MME</end>
+            <noisy>FALSE</noisy>
+        </channel>
+
+        <channel label="chan_MU">
+            <start>MME</start>
+            <end>UE</end>
+            <noisy>FALSE</noisy>
+        </channel>
+    </channels>
+
+    <injective_adversaries>
+        <adversary label="inj_adv_UM"> 
+            <activechannel> chan_UM</activechannel> 
+            <alwayson>FALSE</alwayson>
+        </adversary>
+
+        <adversary label="inj_adv_MU">
+            <activechannel> chan_MU</activechannel>
+            <alwayson>TRUE</alwayson>
+        </adversary>
+
+    </injective_adversaries>
+
+
+
+    <manual_dump>
+        
+        <instance label="range">
+            <section>DEFINE</section>
+            <text> range := 8; </text>
+        </instance>
+        
+        <instance label="ue_auth_fail_max_limit">
+            <section>DEFINE</section>
+            <text> ue_auth_fail_max_limit := 5; </text>
+        </instance>
+        
+        <instance label="ue_sm_reject_max_limit">
+            <section>DEFINE</section>
+            <text> ue_sm_reject_max_limit := 5; </text>
+        </instance>
+
+        <instance label="mme_auth_fail_max_limit">
+            <section>DEFINE</section>
+            <text> mme_auth_fail_max_limit := 5; </text>
+        </instance>
+
+        <instance label="mme_sm_reject_max_limit">
+            <section>DEFINE</section>
+            <text> mme_sm_reject_max_limit := 5; </text>
+        </instance>
+        
+        <instance label="seq_check">
+            <section>DEFINE</section>
+            <text> seq_check  := (ue_seq &lt; mme_ue_shared_seq &amp; mme_ue_shared_seq &lt; (ue_seq + range)); </text>
+        </instance>
+
+        <instance label="ue_auth_fail_count_check">
+            <section>DEFINE</section>
+            <text> ue_auth_fail_count_check  := (ue_auth_fail_count &lt; ue_auth_fail_max_limit); </text>
+        </instance>
+
+        <instance label="mme_auth_fail_count_check">
+            <section>DEFINE</section>
+            <text> mme_auth_fail_count_check  := (mme_auth_fail_count &lt; mme_auth_fail_max_limit); </text>
+        </instance>
+        
+        <instance label="ue_sm_reject_count_check">
+            <section>DEFINE</section>
+            <text>ue_sm_reject_count_check  := (ue_sm_reject_count &lt; ue_sm_reject_max_limit); </text>
+        </instance>
+
+        <instance label="mme_sm_reject_count_check">
+            <section>DEFINE</section>
+            <text>mme_sm_reject_count_check  := (mme_sm_reject_count &lt; mme_sm_reject_max_limit); </text>
+        </instance>
+    </manual_dump>
+</system>

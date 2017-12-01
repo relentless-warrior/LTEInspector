@@ -1,0 +1,49 @@
+(* public communication channel *)
+free c.
+
+(* constant values *)
+fun macFail/0.
+fun syncFail/0.
+fun reject/0.
+fun security_mode_command/0.
+fun security_mode_complete/0.
+fun guti_reallocation_command/0.
+fun guti_reallocation_complete/0.
+fun security_mode_reject/0.
+fun attach_accept/0.
+fun attach_reject/0.
+
+
+(* UMTS AKA protocol specific mac and key generation functions *)
+fun f1/2.
+fun f2/2.
+fun f3/2.
+fun f4/2.
+fun f5/2.
+
+(* symmetric key encryption function *)
+fun senc/3.
+fun sdec/2.
+equation sdec(k, senc(k, r, m)) = m.
+
+let GUTI_REALLOCATION_UE = 
+    in(c, x);
+    let (guti_reallocation_command, xmac) = x in 
+    let mac = f1(k, guti_reallocation_command) in
+    if xmac = mac then (
+		out(c, guti_reallocation_complete)).
+
+let GUTI_REALLOCATION_MME =
+    let mac = f1(k, guti_reallocation_command) in 
+    out(c, (guti_reallocation_command, mac));
+    in(c, =guti_reallocation_complete).
+    
+let UE =  (GUTI_REALLOCATION_UE).
+let MME =  (GUTI_REALLOCATION_MME).
+
+process (! (new sk1; new imsi1;new otmsi1;
+	    (! (new sk2; new imsi2; new osqn; new otmsi2;
+                let imsi = choice[imsi1, imsi2] in (
+	        let k = choice[sk1, sk2] in (
+                let otmsi = choice[otmsi1,otmsi2] in (
+		(UE) | (MME))))))))

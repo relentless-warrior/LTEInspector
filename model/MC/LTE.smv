@@ -1,0 +1,1003 @@
+MODULE main
+
+VAR
+
+
+------------------- Environment and State variables --------------------
+mobile_restart	:	boolean;	
+auth_req_mac_failure	:	boolean;	
+sm_command_mac_failure	:	boolean;	
+ue_detach_requested	:	boolean;	
+ue_attach_completed	:	boolean;	
+ue_auth_mme	:	boolean;	
+xres_matched_sres	:	boolean;	
+mme_network_detach	:	boolean;	
+paging_GUTI_required	:	boolean;	
+paging_IMSI_required	:	boolean;	
+esm_failure	:	boolean;	
+tau_failure	:	boolean;	
+id_request_required	:	boolean;	
+GUTI_reallocation_required	:	boolean;	
+security_context_matched	:	boolean;	
+GUTI_IMSI_mapping_correct	:	boolean;	
+ta_changed	:	boolean;	
+paging_occasion	:	boolean;	
+paging_IMSI_received	:	boolean;	
+ue_inactivity_detected	:	boolean;	
+service_completed	:	boolean;	
+security_capabilities_mismatch	:	boolean;	
+inactivity_timer_expired	:	boolean;	
+cipher_suite_change	:	boolean;	
+mme_auth_required	:	boolean;	
+ue_security_context_exist	:	boolean;	
+ue_security_context_updated	:	boolean;	
+mme_security_context_exist	:	boolean;	
+mme_security_context_updated	:	boolean;	
+mme_attach_completed	:	boolean;	
+mme_wait_for	:	{null, attach_request, id_response, auth_response, sm_response, attach_response, tau_response, service_response, guti_reallocation_response};	
+attacker_inject_message_chanUM	:	boolean	;
+attacker_inject_message_chanMU	:	boolean	;
+
+----------------- Sequence numbers -------------------
+mme_seq	:	0..31	;
+ue_seq	:	0..31	;
+mme_ue_shared_seq	:	0..31	;
+ue_auth_fail_count	:	0..5	;
+mme_auth_fail_count	:	0..5	;
+ue_sm_reject_count	:	0..5	;
+mme_sm_reject_count	:	0..5	;
+
+---------------- state for UE state machine ----------------
+
+ue_state	:
+{
+	ue_deregistered,
+	ue_register_initiated,
+	ue_registered,
+	ue_detach_initiated,
+	ue_tau_initiated,
+	ue_service_initiated,
+	ue_idle
+};
+
+---------------- state for MME state machine ----------------
+
+mme_state	:
+{
+	mme_deregistered,
+	mme_register_initiated,
+	mme_registered,
+	mme_idle,
+	mme_tau_initiated,
+	mme_service_initiated
+};
+------------ Possible UE actions ----------------
+
+ue_action	:
+{
+	ue_attach_req,
+	ue_detach_req,
+	ue_id_response,
+	ue_auth_mac_failure,
+	ue_auth_sync_failure,
+	ue_auth_response,
+	ue_sm_complete,
+	ue_sm_reject,
+	ue_attach_complete,
+	ue_guti_reallocation_complete,
+	ue_null_action,
+	ue_tau_request,
+	ue_tau_complete,
+	ue_service_request
+};
+------------ Possible MME actions ----------------
+
+mme_action	:
+{
+	mme_network_detach_req,
+	mme_attach_reject,
+	mme_auth_request,
+	mme_id_request,
+	mme_detach_accept,
+	mme_attach_accept,
+	mme_auth_reject,
+	mme_security_mode_command,
+	mme_guti_rellocation_command,
+	mme_null_action,
+	mme_guti_reallocation_command,
+	mme_tau_accpet,
+	mme_tau_reject,
+	mme_tau_accept,
+	mme_paging_IMSI,
+	mme_paging_GUTI,
+	mme_id_requested,
+	mme_service_complete,
+	mme_service_reject
+};
+
+--------------- Adversarial channel from UE to MME ---------------
+
+chan_UM	:
+{
+	chanUM_attach_req,
+	chanUM_detach_req,
+	chanUM_id_response,
+	chanUM_auth_mac_failure,
+	chanUM_auth_sync_failure,
+	chanUM_auth_response,
+	chanUM_sm_complete,
+	chanUM_sm_reject,
+	chanUM_attach_complete,
+	chanUM_guti_reallocation_complete,
+	chanUM_null_action,
+	chanUM_tau_request,
+	chanUM_tau_complete,
+	chanUM_service_request
+};
+
+--------------- Adversarial channel from MME to UE ---------------
+
+chan_MU	:
+{
+	chanMU_network_detach_req,
+	chanMU_attach_reject,
+	chanMU_auth_request,
+	chanMU_id_request,
+	chanMU_detach_accept,
+	chanMU_attach_accept,
+	chanMU_auth_reject,
+	chanMU_security_mode_command,
+	chanMU_guti_rellocation_command,
+	chanMU_null_action,
+	chanMU_guti_reallocation_command,
+	chanMU_tau_accpet,
+	chanMU_tau_reject,
+	chanMU_tau_accept,
+	chanMU_paging_IMSI,
+	chanMU_paging_GUTI,
+	chanMU_id_requested,
+	chanMU_service_complete,
+	chanMU_service_reject
+};
+
+--------------- Injection adversary action for channel chan_UM ---------------
+
+inj_adv_act_UM	:
+{
+	adv_UM_attach_req,
+	adv_UM_detach_req,
+	adv_UM_id_response,
+	adv_UM_auth_mac_failure,
+	adv_UM_auth_sync_failure,
+	adv_UM_auth_response,
+	adv_UM_sm_complete,
+	adv_UM_sm_reject,
+	adv_UM_attach_complete,
+	adv_UM_guti_reallocation_complete,
+	adv_UM_null_action,
+	adv_UM_tau_request,
+	adv_UM_tau_complete,
+	adv_UM_service_request
+};
+
+--------------- Injection adversary action for channel chan_MU ---------------
+
+inj_adv_act_MU	:
+{
+	adv_MU_network_detach_req,
+	adv_MU_attach_reject,
+	adv_MU_auth_request,
+	adv_MU_id_request,
+	adv_MU_detach_accept,
+	adv_MU_attach_accept,
+	adv_MU_auth_reject,
+	adv_MU_security_mode_command,
+	adv_MU_guti_rellocation_command,
+	adv_MU_null_action,
+	adv_MU_guti_reallocation_command,
+	adv_MU_tau_accpet,
+	adv_MU_tau_reject,
+	adv_MU_tau_accept,
+	adv_MU_paging_IMSI,
+	adv_MU_paging_GUTI,
+	adv_MU_id_requested,
+	adv_MU_service_complete,
+	adv_MU_service_reject
+};
+
+
+DEFINE
+
+-----------------UE transitions --------------------
+ue_T1	:=	 (ue_state = ue_deregistered &  inactivity_timer_expired & !mobile_restart & !ue_detach_requested)	;
+ue_T2	:=	 (ue_state = ue_deregistered &  mobile_restart & !ue_detach_requested)	;
+ue_T3	:=	 (ue_state = ue_deregistered &  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) & ! mobile_restart & !ue_detach_requested)	;
+ue_T4	:=	 (ue_state = ue_register_initiated &  mobile_restart & !ue_detach_requested)	;
+ue_T5	:=	 (ue_state = ue_register_initiated &  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) & ! mobile_restart & !ue_detach_requested)	;
+ue_T6	:=	 (ue_state = ue_register_initiated & ue_detach_requested & !mobile_restart)	;
+ue_T7	:=	 (ue_state = ue_register_initiated &  chan_MU=chanMU_id_request & !mobile_restart & !ue_detach_requested)	;
+ue_T8	:=	 (ue_state = ue_register_initiated &  chan_MU=chanMU_auth_request & auth_req_mac_failure  & ! mobile_restart & !ue_detach_requested)	;
+ue_T9	:=	 (ue_state = ue_register_initiated &  chan_MU=chanMU_auth_request & !auth_req_mac_failure & !seq_check & ue_auth_fail_count_check & ! mobile_restart & !ue_detach_requested)	;
+ue_T10	:=	 (ue_state = ue_register_initiated &  chan_MU=chanMU_auth_request & !auth_req_mac_failure & !seq_check & ! ue_auth_fail_count_check & ! mobile_restart & !ue_detach_requested)	;
+ue_T11	:=	 (ue_state = ue_register_initiated &  chan_MU=chanMU_auth_request & !auth_req_mac_failure & seq_check & ! mobile_restart & !ue_detach_requested)	;
+ue_T12	:=	 (ue_state = ue_register_initiated &  (chan_MU=chanMU_security_mode_command & ue_auth_mme & !sm_command_mac_failure & !security_capabilities_mismatch & ! mobile_restart & !ue_detach_requested))	;
+ue_T13	:=	 (ue_state = ue_register_initiated &  (chan_MU=chanMU_security_mode_command  & ue_auth_mme & (sm_command_mac_failure | security_capabilities_mismatch)  & ! mobile_restart & !ue_detach_requested))	;
+ue_T14	:=	 (ue_state = ue_register_initiated &  (chan_MU=chanMU_attach_accept  & ue_auth_mme & ue_security_context_exist & ! mobile_restart & !ue_detach_requested))	;
+ue_T15	:=	 (ue_state = ue_registered &  mobile_restart & !ue_detach_requested  & !ta_changed & !ue_inactivity_detected)	;
+ue_T16	:=	 (ue_state = ue_registered &  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) & !mobile_restart & !ue_detach_requested & !ta_changed & !ue_inactivity_detected)	;
+ue_T17	:=	 (ue_state = ue_registered & ue_detach_requested & !mobile_restart  & !ta_changed & !ue_inactivity_detected)	;
+ue_T18	:=	 (ue_state = ue_registered &  chan_MU=chanMU_id_request & !mobile_restart & !ue_detach_requested & !ue_inactivity_detected)	;
+ue_T19	:=	 (ue_state = ue_registered &  chan_MU=chanMU_auth_request & auth_req_mac_failure  & ! mobile_restart  & !ue_detach_requested & !ta_changed  & !ue_inactivity_detected)	;
+ue_T20	:=	 (ue_state = ue_registered &  chan_MU=chanMU_auth_request & !auth_req_mac_failure & !seq_check & ue_auth_fail_count_check & ! mobile_restart & !ue_detach_requested & !ta_changed  & !ue_inactivity_detected)	;
+ue_T21	:=	 (ue_state = ue_registered &  chan_MU=chanMU_auth_request & !auth_req_mac_failure & !seq_check & ! ue_auth_fail_count_check & ! mobile_restart & !ue_detach_requested)	;
+ue_T22	:=	 (ue_state = ue_registered &  chan_MU=chanMU_auth_request & !auth_req_mac_failure & seq_check & ! mobile_restart & !ue_detach_requested & !ta_changed  & !ue_inactivity_detected)	;
+ue_T23	:=	 (ue_state = ue_registered &  (chan_MU=chanMU_security_mode_command & !sm_command_mac_failure & !security_capabilities_mismatch & ! mobile_restart & !ue_detach_requested & !ta_changed & !ue_inactivity_detected))	;
+ue_T24	:=	 (ue_state = ue_registered &  (chan_MU=chanMU_security_mode_command & (sm_command_mac_failure | security_capabilities_mismatch)  & ! mobile_restart & !ue_detach_requested & !ta_changed & !ue_inactivity_detected))	;
+ue_T25	:=	 (ue_state = ue_registered &  (chan_MU=chanMU_attach_accept & ! mobile_restart & !ue_detach_requested))	;
+ue_T26	:=	 (ue_state = ue_registered &  (chan_MU=chanMU_guti_reallocation_command & security_context_matched & ! mobile_restart & !ue_detach_requested))	;
+ue_T27	:=	 (ue_state = ue_registered &  (chan_MU=chanMU_guti_reallocation_command & !security_context_matched & ! mobile_restart & !ue_detach_requested))	;
+ue_T28	:=	 (ue_state = ue_registered &  ta_changed & !mobile_restart & !ue_detach_requested & !ue_inactivity_detected)	;
+ue_T29	:=	 (ue_state = ue_registered &  ue_security_context_exist & ue_attach_completed & ue_inactivity_detected  & !mobile_restart & !ue_detach_requested & !ta_changed)	;
+ue_T30	:=	 (ue_state = ue_tau_initiated &  mobile_restart & !ue_detach_requested & !ta_changed)	;
+ue_T31	:=	 (ue_state = ue_tau_initiated &  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU = chanMU_service_reject) & !mobile_restart & !ue_detach_requested & !ta_changed)	;
+ue_T32	:=	 (ue_state = ue_tau_initiated & ue_detach_requested & !mobile_restart  & !ta_changed)	;
+ue_T33	:=	 (ue_state = ue_tau_initiated &  chan_MU=chanMU_id_request & !mobile_restart & !ue_detach_requested & !ta_changed )	;
+ue_T34	:=	 (ue_state = ue_tau_initiated &  ta_changed & !mobile_restart &ue_detach_requested)	;
+ue_T35	:=	 (ue_state = ue_tau_initiated &  chan_MU=chanMU_auth_request & auth_req_mac_failure  & ! mobile_restart  & !ue_detach_requested & !ta_changed )	;
+ue_T36	:=	 (ue_state = ue_tau_initiated &  chan_MU=chanMU_auth_request & !auth_req_mac_failure & !seq_check & ue_auth_fail_count_check & ! mobile_restart & !ue_detach_requested & !ta_changed)	;
+ue_T37	:=	 (ue_state = ue_tau_initiated &  chan_MU=chanMU_auth_request & !auth_req_mac_failure & seq_check & ! mobile_restart & !ue_detach_requested & !ta_changed)	;
+ue_T38	:=	 (ue_state = ue_tau_initiated &  (chan_MU=chanMU_security_mode_command & !sm_command_mac_failure & !security_capabilities_mismatch & ! mobile_restart & !ue_detach_requested & !ta_changed & !ue_inactivity_detected))	;
+ue_T39	:=	 (ue_state = ue_tau_initiated &  (chan_MU=chanMU_security_mode_command & (sm_command_mac_failure | security_capabilities_mismatch)  & ! mobile_restart & !ue_detach_requested & !ta_changed))	;
+ue_T40	:=	 (ue_state = ue_tau_initiated &  chan_MU=chanMU_tau_accept & !mobile_restart  & !ta_changed &ue_detach_requested)	;
+ue_T41	:=	 (ue_state = ue_detach_initiated &  mobile_restart & !ue_detach_requested)	;
+ue_T42	:=	 (ue_state = ue_detach_initiated & ue_detach_requested & !mobile_restart)	;
+ue_T43	:=	 (ue_state = ue_detach_initiated &  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU=chanMU_service_reject) & !mobile_restart & !ue_detach_requested)	;
+ue_T44	:=	 (ue_state = ue_idle &  (chan_MU=chanMU_paging_IMSI & paging_occasion & !mobile_restart))	;
+ue_T45	:=	 (ue_state = ue_idle &  (chan_MU=chanMU_paging_GUTI & paging_occasion & !mobile_restart))	;
+ue_T46	:=	 (ue_state = ue_service_initiated &  mobile_restart & !ue_detach_requested )	;
+ue_T47	:=	 (ue_state = ue_service_initiated & ue_detach_requested & !mobile_restart)	;
+ue_T48	:=	 (ue_state = ue_service_initiated &  (chan_MU=chanMU_auth_reject | chan_MU=chanMU_attach_reject | chan_MU=chanMU_network_detach_req | chan_MU=chanMU_service_reject) & !mobile_restart & !ue_detach_requested)	;
+ue_T49	:=	 (ue_state = ue_service_initiated &  (chan_MU = chanMU_service_complete & !mobile_restart  & !ue_detach_requested))	;
+
+-----------------MME transitions --------------------
+mme_T1	:=	 (mme_state = mme_deregistered &  mme_network_detach )	;
+mme_T2	:=	 (mme_state = mme_deregistered &  chan_UM=chanUM_attach_req & esm_failure & !mme_network_detach)	;
+mme_T3	:=	 (mme_state = mme_deregistered &  chan_UM=chanUM_attach_req & !esm_failure & !id_request_required & ! mme_network_detach )	;
+mme_T4	:=	 (mme_state = mme_deregistered &  chan_UM=chanUM_attach_req & !esm_failure & id_request_required  & ! mme_network_detach)	;
+mme_T5	:=	 (mme_state = mme_register_initiated & mme_network_detach)	;
+mme_T6	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_detach_req  & ! mme_network_detach)	;
+mme_T7	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_attach_req & esm_failure  & ! mme_network_detach)	;
+mme_T8	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_attach_req & !esm_failure & !id_request_required  & !mme_security_context_exist & !mme_attach_completed & ! mme_network_detach )	;
+mme_T9	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_attach_req & !esm_failure & !id_request_required  & mme_security_context_exist & mme_attach_completed & ! mme_network_detach )	;
+mme_T10	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_attach_req & !esm_failure & id_request_required  & ! mme_network_detach)	;
+mme_T11	:=	 (mme_state = mme_register_initiated & chan_UM=chanUM_attach_req & !mme_auth_fail_count_check  & ! mme_network_detach)	;
+mme_T12	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_auth_mac_failure & mme_wait_for=auth_response & GUTI_IMSI_mapping_correct  & ! mme_network_detach)	;
+mme_T13	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_auth_mac_failure & mme_wait_for=auth_response & !GUTI_IMSI_mapping_correct  & ! mme_network_detach)	;
+mme_T14	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_id_response  & mme_wait_for=id_response & ! mme_network_detach)	;
+mme_T15	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_auth_sync_failure & mme_wait_for=auth_response & mme_auth_fail_count_check & ! mme_network_detach)	;
+mme_T16	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_auth_sync_failure & mme_wait_for=auth_response & !mme_auth_fail_count_check & ! mme_network_detach)	;
+mme_T17	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_auth_response & mme_wait_for=auth_response & xres_matched_sres & ! mme_network_detach)	;
+mme_T18	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_auth_response & mme_wait_for=auth_response & !xres_matched_sres & ! mme_network_detach)	;
+mme_T19	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & mme_sm_reject_count_check  & ! mme_network_detach)	;
+mme_T20	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & !mme_sm_reject_count_check & !mme_security_context_exist & ! mme_network_detach)	;
+mme_T21	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & !mme_sm_reject_count_check & mme_security_context_exist & ! mme_network_detach)	;
+mme_T22	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_sm_complete & mme_wait_for=sm_response & !mme_network_detach)	;
+mme_T23	:=	 (mme_state = mme_register_initiated &  chan_UM=chanUM_attach_complete & mme_wait_for=attach_response & !mme_network_detach)	;
+mme_T24	:=	 (mme_state = mme_registered &  mme_network_detach  & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T25	:=	 (mme_state = mme_registered &  chan_UM=chanUM_detach_req  & ! mme_network_detach & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T26	:=	 (mme_state = mme_registered &  chan_UM=chanUM_attach_req & esm_failure & ! mme_network_detach & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T27	:=	 (mme_state = mme_registered &  chan_UM=chanUM_attach_req & !esm_failure & !id_request_required  & !mme_security_context_exist & !mme_attach_completed & ! mme_network_detach  & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T28	:=	 (mme_state = mme_registered &  chan_UM=chanUM_attach_req & !esm_failure & !id_request_required  & mme_security_context_exist & mme_attach_completed & ! mme_network_detach  & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change  & !GUTI_reallocation_required)	;
+mme_T29	:=	 (mme_state = mme_registered &  chan_UM=chanUM_attach_req & !esm_failure & id_request_required  & ! mme_network_detach  & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T30	:=	 (mme_state = mme_registered &  mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T31	:=	 (mme_state = mme_registered &  GUTI_reallocation_required & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change)	;
+mme_T32	:=	 (mme_state = mme_registered &  chan_UM=chanUM_guti_reallocation_complete & mme_wait_for=guti_reallocation_response & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T33	:=	 (mme_state = mme_registered &  chan_UM=chanUM_auth_mac_failure & mme_wait_for=auth_response & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change  & !GUTI_reallocation_required)	;
+mme_T34	:=	 (mme_state = mme_registered &  chan_UM=chanUM_auth_sync_failure & mme_auth_fail_count_check &  !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T35	:=	 (mme_state = mme_registered &  chan_UM=chanUM_auth_sync_failure & mme_wait_for=auth_response & !mme_auth_fail_count_check  & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T36	:=	 (mme_state = mme_registered &  chan_UM=chanUM_auth_response & mme_wait_for=auth_response & xres_matched_sres & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T37	:=	 (mme_state = mme_registered &  chan_UM=chanUM_auth_response & mme_wait_for=auth_response & !xres_matched_sres & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T38	:=	 (mme_state = mme_registered &  cipher_suite_change & !mme_auth_required & ! mme_network_detach  & !GUTI_reallocation_required)	;
+mme_T39	:=	 (mme_state = mme_registered &  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & mme_sm_reject_count_check & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T40	:=	 (mme_state = mme_registered &  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & !mme_sm_reject_count_check & !mme_security_context_exist & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T41	:=	 (mme_state = mme_registered &  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & !mme_sm_reject_count_check & mme_security_context_exist & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T42	:=	 (mme_state = mme_registered &  chan_UM=chanUM_sm_complete & mme_wait_for=sm_response & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change)	;
+mme_T43	:=	 (mme_state = mme_registered &  chan_UM=chanUM_tau_request & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required)	;
+mme_T44	:=	 (mme_state = mme_registered &  mme_security_context_exist & ue_inactivity_detected & !mme_auth_required & ! mme_network_detach & !cipher_suite_change)	;
+mme_T45	:=	 (mme_state = mme_tau_initiated & id_request_required & !GUTI_reallocation_required)	;
+mme_T46	:=	 (mme_state = mme_tau_initiated & GUTI_reallocation_required & !id_request_required )	;
+mme_T47	:=	 (mme_state = mme_tau_initiated &  chan_UM=chanUM_guti_reallocation_complete & mme_wait_for=guti_reallocation_response & !tau_failure & !id_request_required & !GUTI_reallocation_required)	;
+mme_T48	:=	 (mme_state = mme_tau_initiated &  chan_UM=chanUM_id_response & mme_wait_for=id_response & !tau_failure & !id_request_required & !GUTI_reallocation_required)	;
+mme_T49	:=	 (mme_state = mme_tau_initiated &  chan_UM=chanUM_id_response & mme_wait_for=id_response & tau_failure & !id_request_required & !GUTI_reallocation_required)	;
+mme_T50	:=	 (mme_state = mme_tau_initiated &  !id_request_required & !tau_failure & !GUTI_reallocation_required)	;
+mme_T51	:=	 (mme_state = mme_tau_initiated &  !id_request_required & !GUTI_reallocation_required & tau_failure)	;
+mme_T52	:=	 (mme_state = mme_tau_initiated &  chan_UM=chanUM_tau_complete & mme_wait_for=tau_response  & !id_request_required & !GUTI_reallocation_required)	;
+mme_T53	:=	 (mme_state = mme_idle &  paging_IMSI_required & paging_occasion)	;
+mme_T54	:=	 (mme_state = mme_idle &  paging_GUTI_required & paging_occasion )	;
+mme_T55	:=	 (mme_state = mme_idle &  chan_UM = chanUM_tau_request & !paging_occasion)	;
+mme_T56	:=	 (mme_state = mme_service_initiated &  mme_network_detach)	;
+mme_T57	:=	 (mme_state = mme_service_initiated &  chan_UM = chanUM_service_request & mme_wait_for=service_response & service_completed & !mme_network_detach)	;
+mme_T58	:=	 (mme_state = mme_service_initiated &  chan_UM = chanUM_service_request & mme_wait_for=service_response & !service_completed & ! mme_network_detach)	;
+
+------------------- Noisy Channels --------------------
+noisy_channel_UM:=	FALSE;
+noisy_channel_MU:=	FALSE;
+
+------------------- Adversary enabled or not --------------------
+inj_adv_UM_enabled:=	TRUE;
+inj_adv_MU_enabled:=	FALSE;
+range := 8; 
+ue_auth_fail_max_limit := 5; 
+ue_sm_reject_max_limit := 5; 
+mme_auth_fail_max_limit := 5; 
+mme_sm_reject_max_limit := 5; 
+seq_check  := (ue_seq < mme_ue_shared_seq & mme_ue_shared_seq < (ue_seq + range)); 
+ue_auth_fail_count_check  := (ue_auth_fail_count < ue_auth_fail_max_limit); 
+mme_auth_fail_count_check  := (mme_auth_fail_count < mme_auth_fail_max_limit); 
+ue_sm_reject_count_check  := (ue_sm_reject_count < ue_sm_reject_max_limit); 
+mme_sm_reject_count_check  := (mme_sm_reject_count < mme_sm_reject_max_limit); 
+
+
+ASSIGN
+
+
+------------------- Adversarial state machines --------------------
+
+init(inj_adv_act_UM)	:=
+{
+	adv_UM_attach_req,
+	adv_UM_detach_req,
+	adv_UM_id_response,
+	adv_UM_auth_mac_failure,
+	adv_UM_auth_sync_failure,
+	adv_UM_auth_response,
+	adv_UM_sm_complete,
+	adv_UM_sm_reject,
+	adv_UM_attach_complete,
+	adv_UM_guti_reallocation_complete,
+	adv_UM_null_action,
+	adv_UM_tau_request,
+	adv_UM_tau_complete,
+	adv_UM_service_request
+};
+
+next(inj_adv_act_UM)	:=	case
+TRUE	:	{
+	adv_UM_attach_req,
+	adv_UM_detach_req,
+	adv_UM_id_response,
+	adv_UM_auth_mac_failure,
+	adv_UM_auth_sync_failure,
+	adv_UM_auth_response,
+	adv_UM_sm_complete,
+	adv_UM_sm_reject,
+	adv_UM_attach_complete,
+	adv_UM_guti_reallocation_complete,
+	adv_UM_null_action,
+	adv_UM_tau_request,
+	adv_UM_tau_complete,
+	adv_UM_service_request
+};
+esac	;
+
+init(inj_adv_act_MU)	:=
+{
+	adv_MU_network_detach_req,
+	adv_MU_attach_reject,
+	adv_MU_auth_request,
+	adv_MU_id_request,
+	adv_MU_detach_accept,
+	adv_MU_attach_accept,
+	adv_MU_auth_reject,
+	adv_MU_security_mode_command,
+	adv_MU_guti_rellocation_command,
+	adv_MU_null_action,
+	adv_MU_guti_reallocation_command,
+	adv_MU_tau_accpet,
+	adv_MU_tau_reject,
+	adv_MU_tau_accept,
+	adv_MU_paging_IMSI,
+	adv_MU_paging_GUTI,
+	adv_MU_id_requested,
+	adv_MU_service_complete,
+	adv_MU_service_reject
+};
+
+next(inj_adv_act_MU)	:=	case
+TRUE	:	{
+	adv_MU_network_detach_req,
+	adv_MU_attach_reject,
+	adv_MU_auth_request,
+	adv_MU_id_request,
+	adv_MU_detach_accept,
+	adv_MU_attach_accept,
+	adv_MU_auth_reject,
+	adv_MU_security_mode_command,
+	adv_MU_guti_rellocation_command,
+	adv_MU_null_action,
+	adv_MU_guti_reallocation_command,
+	adv_MU_tau_accpet,
+	adv_MU_tau_reject,
+	adv_MU_tau_accept,
+	adv_MU_paging_IMSI,
+	adv_MU_paging_GUTI,
+	adv_MU_id_requested,
+	adv_MU_service_complete,
+	adv_MU_service_reject
+};
+esac	;
+
+
+---------------UE state machine ------------------
+
+init(ue_state)	:=ue_deregistered;
+
+next(ue_state)	:=	 case
+
+(ue_T1 | ue_T3 | ue_T5 | ue_T10 | ue_T16 | ue_T21 | ue_T31 | ue_T43 | ue_T44 | ue_T48 )	:	ue_deregistered	;
+(ue_T2 | ue_T4 | ue_T7 | ue_T8 | ue_T9 | ue_T11 | ue_T12 | ue_T13 | ue_T15 | ue_T30 | ue_T41 | ue_T46 )	:	ue_register_initiated	;
+(ue_T14 | ue_T18 | ue_T19 | ue_T20 | ue_T22 | ue_T23 | ue_T24 | ue_T25 | ue_T26 | ue_T27 | ue_T40 | ue_T49 )	:	ue_registered	;
+(ue_T6 | ue_T17 | ue_T32 | ue_T42 | ue_T47 )	:	ue_detach_initiated	;
+(ue_T28 | ue_T33 | ue_T34 | ue_T35 | ue_T36 | ue_T37 | ue_T38 | ue_T39 )	:	ue_tau_initiated	;
+(ue_T45 )	:	ue_service_initiated	;
+(ue_T29 )	:	ue_idle	;
+TRUE	:	ue_state	;
+esac	;
+
+---------------MME state machine ------------------
+
+init(mme_state)	:=mme_deregistered;
+
+next(mme_state)	:=	 case
+
+(mme_T1 | mme_T2 | mme_T5 | mme_T6 | mme_T7 | mme_T11 | mme_T12 | mme_T16 | mme_T18 | mme_T20 | mme_T24 | mme_T25 | mme_T26 | mme_T35 | mme_T37 | mme_T40 | mme_T49 | mme_T51 | mme_T53 | mme_T56 | mme_T58 )	:	mme_deregistered	;
+(mme_T3 | mme_T4 | mme_T8 | mme_T9 | mme_T10 | mme_T13 | mme_T14 | mme_T15 | mme_T17 | mme_T19 | mme_T21 | mme_T22 | mme_T27 | mme_T28 | mme_T29 )	:	mme_register_initiated	;
+(mme_T23 | mme_T30 | mme_T31 | mme_T32 | mme_T33 | mme_T34 | mme_T36 | mme_T38 | mme_T39 | mme_T41 | mme_T42 | mme_T52 | mme_T57 )	:	mme_registered	;
+(mme_T44 )	:	mme_idle	;
+(mme_T43 | mme_T45 | mme_T46 | mme_T47 | mme_T48 | mme_T50 | mme_T55 )	:	mme_tau_initiated	;
+(mme_T54 )	:	mme_service_initiated	;
+TRUE	:	mme_state	;
+esac	;
+
+
+init(ue_action)	:= ue_null_action	;
+
+next(ue_action)	:=	 case
+
+(ue_T2 | ue_T4 | ue_T15 | ue_T30 | ue_T41 | ue_T46 )	:	ue_attach_req	;
+(ue_T6 | ue_T17 | ue_T32 | ue_T42 | ue_T47 )	:	ue_detach_req	;
+(ue_T7 | ue_T18 | ue_T33 )	:	ue_id_response	;
+(ue_T8 | ue_T19 | ue_T35 )	:	ue_auth_mac_failure	;
+(ue_T9 | ue_T10 | ue_T20 | ue_T21 | ue_T36 )	:	ue_auth_sync_failure	;
+(ue_T11 | ue_T22 | ue_T37 )	:	ue_auth_response	;
+(ue_T12 | ue_T23 | ue_T38 )	:	ue_sm_complete	;
+(ue_T13 | ue_T24 | ue_T39 )	:	ue_sm_reject	;
+(ue_T14 | ue_T25 )	:	ue_attach_complete	;
+(ue_T26 )	:	ue_guti_reallocation_complete	;
+(ue_T27 | ue_T29 | ue_T49 )	:	ue_null_action	;
+(ue_T28 | ue_T34 )	:	ue_tau_request	;
+(ue_T40 )	:	ue_tau_complete	;
+(ue_T45 )	:	ue_service_request	;
+TRUE	:	ue_null_action	;
+esac	;
+
+
+init(mme_action)	:= mme_null_action	;
+
+next(mme_action)	:=	 case
+
+(mme_T1 | mme_T5 | mme_T24 | mme_T56 )	:	mme_network_detach_req	;
+(mme_T2 | mme_T7 | mme_T11 | mme_T20 | mme_T26 )	:	mme_attach_reject	;
+(mme_T3 | mme_T8 | mme_T14 | mme_T15 | mme_T27 | mme_T30 | mme_T33 | mme_T34 )	:	mme_auth_request	;
+(mme_T4 | mme_T10 | mme_T13 | mme_T29 | mme_T43 | mme_T45 )	:	mme_id_request	;
+(mme_T6 | mme_T25 )	:	mme_detach_accept	;
+(mme_T9 | mme_T21 | mme_T22 | mme_T28 | mme_T41 )	:	mme_attach_accept	;
+(mme_T12 | mme_T16 | mme_T18 | mme_T35 | mme_T37 )	:	mme_auth_reject	;
+(mme_T17 | mme_T19 | mme_T36 | mme_T38 | mme_T39 )	:	mme_security_mode_command	;
+(mme_T31 )	:	mme_guti_rellocation_command	;
+(mme_T32 | mme_T44 | mme_T52 )	:	mme_null_action	;
+(mme_T46 )	:	mme_guti_reallocation_command	;
+(mme_T47 | mme_T48 )	:	mme_tau_accpet	;
+(mme_T49 | mme_T51 )	:	mme_tau_reject	;
+(mme_T50 )	:	mme_tau_accept	;
+(mme_T53 )	:	mme_paging_IMSI	;
+(mme_T54 )	:	mme_paging_GUTI	;
+(mme_T55 )	:	mme_id_requested	;
+(mme_T57 )	:	mme_service_complete	;
+(mme_T58 )	:	mme_service_reject	;
+TRUE	:	mme_null_action	;
+esac	;
+
+init(chan_UM)	:=	chanUM_null_action;
+
+next(chan_UM)	:=	 case
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_attach_req	:	chanUM_attach_req	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_detach_req	:	chanUM_detach_req	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_id_response	:	chanUM_id_response	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_auth_mac_failure	:	chanUM_auth_mac_failure	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_auth_sync_failure	:	chanUM_auth_sync_failure	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_auth_response	:	chanUM_auth_response	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_sm_complete	:	chanUM_sm_complete	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_sm_reject	:	chanUM_sm_reject	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_attach_complete	:	chanUM_attach_complete	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_guti_reallocation_complete	:	chanUM_guti_reallocation_complete	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_null_action	:	chanUM_null_action	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_tau_request	:	chanUM_tau_request	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_tau_complete	:	chanUM_tau_complete	;
+attacker_inject_message_chanUM	&	inj_adv_UM_enabled	&	inj_adv_act_UM	=	adv_UM_service_request	:	chanUM_service_request	;
+! noisy_channel_UM	&	ue_action	=	 ue_attach_req	:	chanUM_attach_req	;
+! noisy_channel_UM	&	ue_action	=	 ue_detach_req	:	chanUM_detach_req	;
+! noisy_channel_UM	&	ue_action	=	 ue_id_response	:	chanUM_id_response	;
+! noisy_channel_UM	&	ue_action	=	 ue_auth_mac_failure	:	chanUM_auth_mac_failure	;
+! noisy_channel_UM	&	ue_action	=	 ue_auth_sync_failure	:	chanUM_auth_sync_failure	;
+! noisy_channel_UM	&	ue_action	=	 ue_auth_response	:	chanUM_auth_response	;
+! noisy_channel_UM	&	ue_action	=	 ue_sm_complete	:	chanUM_sm_complete	;
+! noisy_channel_UM	&	ue_action	=	 ue_sm_reject	:	chanUM_sm_reject	;
+! noisy_channel_UM	&	ue_action	=	 ue_attach_complete	:	chanUM_attach_complete	;
+! noisy_channel_UM	&	ue_action	=	 ue_guti_reallocation_complete	:	chanUM_guti_reallocation_complete	;
+! noisy_channel_UM	&	ue_action	=	 ue_null_action	:	chanUM_null_action	;
+! noisy_channel_UM	&	ue_action	=	 ue_tau_request	:	chanUM_tau_request	;
+! noisy_channel_UM	&	ue_action	=	 ue_tau_complete	:	chanUM_tau_complete	;
+! noisy_channel_UM	&	ue_action	=	 ue_service_request	:	chanUM_service_request	;
+
+TRUE	:
+{
+	chanUM_attach_req,
+	chanUM_detach_req,
+	chanUM_id_response,
+	chanUM_auth_mac_failure,
+	chanUM_auth_sync_failure,
+	chanUM_auth_response,
+	chanUM_sm_complete,
+	chanUM_sm_reject,
+	chanUM_attach_complete,
+	chanUM_guti_reallocation_complete,
+	chanUM_null_action,
+	chanUM_tau_request,
+	chanUM_tau_complete,
+	chanUM_service_request
+}	;
+esac	;
+
+
+init(chan_MU)	:=	chanMU_null_action;
+
+next(chan_MU)	:=	 case
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_network_detach_req	:	chanMU_network_detach_req	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_attach_reject	:	chanMU_attach_reject	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_auth_request	:	chanMU_auth_request	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_id_request	:	chanMU_id_request	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_detach_accept	:	chanMU_detach_accept	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_attach_accept	:	chanMU_attach_accept	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_auth_reject	:	chanMU_auth_reject	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_security_mode_command	:	chanMU_security_mode_command	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_guti_rellocation_command	:	chanMU_guti_rellocation_command	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_null_action	:	chanMU_null_action	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_guti_reallocation_command	:	chanMU_guti_reallocation_command	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_tau_accpet	:	chanMU_tau_accpet	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_tau_reject	:	chanMU_tau_reject	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_tau_accept	:	chanMU_tau_accept	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_paging_IMSI	:	chanMU_paging_IMSI	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_paging_GUTI	:	chanMU_paging_GUTI	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_id_requested	:	chanMU_id_requested	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_service_complete	:	chanMU_service_complete	;
+attacker_inject_message_chanMU	&	inj_adv_MU_enabled	&	inj_adv_act_MU	=	adv_MU_service_reject	:	chanMU_service_reject	;
+! noisy_channel_MU	&	mme_action	=	 mme_network_detach_req	:	chanMU_network_detach_req	;
+! noisy_channel_MU	&	mme_action	=	 mme_attach_reject	:	chanMU_attach_reject	;
+! noisy_channel_MU	&	mme_action	=	 mme_auth_request	:	chanMU_auth_request	;
+! noisy_channel_MU	&	mme_action	=	 mme_id_request	:	chanMU_id_request	;
+! noisy_channel_MU	&	mme_action	=	 mme_detach_accept	:	chanMU_detach_accept	;
+! noisy_channel_MU	&	mme_action	=	 mme_attach_accept	:	chanMU_attach_accept	;
+! noisy_channel_MU	&	mme_action	=	 mme_auth_reject	:	chanMU_auth_reject	;
+! noisy_channel_MU	&	mme_action	=	 mme_security_mode_command	:	chanMU_security_mode_command	;
+! noisy_channel_MU	&	mme_action	=	 mme_guti_rellocation_command	:	chanMU_guti_rellocation_command	;
+! noisy_channel_MU	&	mme_action	=	 mme_null_action	:	chanMU_null_action	;
+! noisy_channel_MU	&	mme_action	=	 mme_guti_reallocation_command	:	chanMU_guti_reallocation_command	;
+! noisy_channel_MU	&	mme_action	=	 mme_tau_accpet	:	chanMU_tau_accpet	;
+! noisy_channel_MU	&	mme_action	=	 mme_tau_reject	:	chanMU_tau_reject	;
+! noisy_channel_MU	&	mme_action	=	 mme_tau_accept	:	chanMU_tau_accept	;
+! noisy_channel_MU	&	mme_action	=	 mme_paging_IMSI	:	chanMU_paging_IMSI	;
+! noisy_channel_MU	&	mme_action	=	 mme_paging_GUTI	:	chanMU_paging_GUTI	;
+! noisy_channel_MU	&	mme_action	=	 mme_id_requested	:	chanMU_id_requested	;
+! noisy_channel_MU	&	mme_action	=	 mme_service_complete	:	chanMU_service_complete	;
+! noisy_channel_MU	&	mme_action	=	 mme_service_reject	:	chanMU_service_reject	;
+
+TRUE	:
+{
+	chanMU_network_detach_req,
+	chanMU_attach_reject,
+	chanMU_auth_request,
+	chanMU_id_request,
+	chanMU_detach_accept,
+	chanMU_attach_accept,
+	chanMU_auth_reject,
+	chanMU_security_mode_command,
+	chanMU_guti_rellocation_command,
+	chanMU_null_action,
+	chanMU_guti_reallocation_command,
+	chanMU_tau_accpet,
+	chanMU_tau_reject,
+	chanMU_tau_accept,
+	chanMU_paging_IMSI,
+	chanMU_paging_GUTI,
+	chanMU_id_requested,
+	chanMU_service_complete,
+	chanMU_service_reject
+}	;
+esac	;
+
+
+
+init(ue_attach_completed)	:= FALSE	;
+
+next(ue_attach_completed)	:=	 case
+(ue_T14 | ue_T25 )	:	TRUE	;
+(ue_T1 | ue_T2 | ue_T4 | ue_T15 | ue_T30 | ue_T41 | ue_T46 )	:	FALSE	;
+TRUE	:	ue_attach_completed	;
+esac	;
+
+
+
+init(ue_auth_mme)	:= FALSE	;
+
+next(ue_auth_mme)	:=	 case
+(ue_T11 )	:	TRUE	;
+(ue_T2 | ue_T4 | ue_T8 | ue_T9 | ue_T10 )	:	FALSE	;
+TRUE	:	ue_auth_mme	;
+esac	;
+
+
+
+init(paging_IMSI_received)	:= FALSE	;
+
+next(paging_IMSI_received)	:=	 case
+(ue_T44 )	:	TRUE	;
+(ue_T1 | ue_T2 )	:	FALSE	;
+TRUE	:	paging_IMSI_received	;
+esac	;
+
+
+
+init(ue_security_context_exist)	:= FALSE	;
+
+next(ue_security_context_exist)	:=	 case
+(ue_T12 )	:	TRUE	;
+(ue_T1 | ue_T3 | ue_T5 | ue_T16 | ue_T31 | ue_T41 | ue_T43 | ue_T48 )	:	FALSE	;
+TRUE	:	ue_security_context_exist	;
+esac	;
+
+
+
+init(ue_security_context_updated)	:= FALSE	;
+
+next(ue_security_context_updated)	:=	 case
+(ue_T12 | ue_T23 | ue_T38 )	:	TRUE	;
+(ue_T2 | ue_T4 | ue_T13 | ue_T24 | ue_T30 | ue_T39 | ue_T46 )	:	FALSE	;
+TRUE	:	ue_security_context_updated	;
+esac	;
+
+
+
+init(mme_security_context_exist)	:= FALSE	;
+
+next(mme_security_context_exist)	:=	 case
+(mme_T22 | mme_T42 )	:	TRUE	;
+(mme_T3 | mme_T8 | mme_T10 | mme_T27 | mme_T29 )	:	FALSE	;
+TRUE	:	mme_security_context_exist	;
+esac	;
+
+
+
+init(mme_security_context_updated)	:= FALSE	;
+
+next(mme_security_context_updated)	:=	 case
+(mme_T22 | mme_T42 )	:	TRUE	;
+(mme_T3 | mme_T8 | mme_T10 | mme_T19 | mme_T20 | mme_T21 | mme_T27 | mme_T29 | mme_T38 | mme_T39 | mme_T40 | mme_T41 )	:	FALSE	;
+TRUE	:	mme_security_context_updated	;
+esac	;
+
+
+
+init(mme_attach_completed)	:= FALSE	;
+
+next(mme_attach_completed)	:=	 case
+(mme_T23 )	:	TRUE	;
+(mme_T3 )	:	FALSE	;
+TRUE	:	mme_attach_completed	;
+esac	;
+
+
+
+init(mme_wait_for)	:= null	;
+
+next(mme_wait_for)	:=	 case
+(mme_T4 | mme_T10 | mme_T13 | mme_T29 | mme_T43 | mme_T45 | mme_T55 )	:	id_response	;
+(mme_T3 | mme_T8 | mme_T14 | mme_T15 | mme_T30 | mme_T33 | mme_T34 )	:	auth_response	;
+(mme_T17 | mme_T19 | mme_T36 | mme_T38 | mme_T39 )	:	sm_response	;
+(mme_T9 | mme_T21 | mme_T22 | mme_T41 )	:	attach_response	;
+(mme_T47 | mme_T48 )	:	tau_response	;
+(mme_T54 )	:	service_response	;
+(mme_T31 | mme_T46 )	:	guti_reallocation_response	;
+TRUE	:	mme_wait_for	;
+esac	;
+
+
+init(mme_seq)	:= 0	;
+init(ue_seq)	:= 0	;
+init(mme_ue_shared_seq)	:= 0	;
+init(ue_auth_fail_count)	:= 0	;
+init(mme_auth_fail_count)	:= 0	;
+init(ue_sm_reject_count)	:= 0	;
+init(mme_sm_reject_count)	:= 0	;
+
+TRANS
+case
+(mme_T3 | mme_T8 | mme_T10 | mme_T15 | mme_T27 | mme_T29 | mme_T30 | mme_T34 )	:	next(mme_seq)	=	((mme_seq + 1) mod 32)	;
+(ue_T9 | ue_T10 | ue_T20 | ue_T21 | ue_T36 )	:	next(mme_seq)	=	ue_seq + 1	;
+TRUE	:	next(mme_seq)	=	mme_seq	;
+esac	;
+
+TRANS
+case
+(ue_T11 | ue_T22 | ue_T37 )	:	next(ue_seq)	=	((mme_ue_shared_seq + 1) mod 32)	;
+TRUE	:	next(ue_seq)	=	ue_seq	;
+esac	;
+
+TRANS
+case
+(mme_T3 | mme_T8 | mme_T10 | mme_T15 | mme_T27 | mme_T29 | mme_T30 | mme_T34 )	:	next(mme_ue_shared_seq)	=	next(mme_seq)	;
+TRUE	:	next(mme_ue_shared_seq)	=	mme_ue_shared_seq	;
+esac	;
+
+TRANS
+case
+(ue_T8 | ue_T9 | ue_T10 | ue_T19 | ue_T20 | ue_T21 | ue_T35 | ue_T36 )	:	next(ue_auth_fail_count)	=	ue_auth_fail_count + 1	;
+(ue_T1 | ue_T2 | ue_T4 | ue_T11 | ue_T15 | ue_T22 | ue_T30 | ue_T37 | ue_T41 | ue_T46 )	:	next(ue_auth_fail_count)	=	0	;
+TRUE	:	next(ue_auth_fail_count)	=	ue_auth_fail_count	;
+esac	;
+
+TRANS
+case
+(mme_T15 | mme_T34 )	:	next(mme_auth_fail_count)	=	mme_auth_fail_count + 1	;
+(mme_T3 | mme_T8 | mme_T10 | mme_T27 | mme_T29 | mme_T30 )	:	next(mme_auth_fail_count)	=	0	;
+TRUE	:	next(mme_auth_fail_count)	=	mme_auth_fail_count	;
+esac	;
+
+TRANS
+case
+(ue_T13 | ue_T24 | ue_T39 )	:	next(ue_sm_reject_count)	=	ue_sm_reject_count + 1	;
+(ue_T1 | ue_T2 | ue_T4 | ue_T12 | ue_T15 | ue_T23 | ue_T30 | ue_T38 | ue_T46 )	:	next(ue_sm_reject_count)	=	0	;
+TRUE	:	next(ue_sm_reject_count)	=	ue_sm_reject_count	;
+esac	;
+
+TRANS
+case
+(mme_T19 | mme_T39 )	:	next(mme_sm_reject_count)	=	mme_sm_reject_count + 1	;
+(mme_T3 | mme_T8 | mme_T10 | mme_T20 | mme_T21 | mme_T22 | mme_T23 | mme_T27 | mme_T29 | mme_T40 | mme_T41 | mme_T42 )	:	next(mme_sm_reject_count)	=	0	;
+TRUE	:	next(mme_sm_reject_count)	=	mme_sm_reject_count	;
+esac	;
+
+
+
+
+--- ##########################################
+--- Property 1: The UE responds with a id_request message only if the MME sent an id_request message
+--- Set the inj_adv_UM_enabled=FALSE, inj_adv_act_MU =TRUE 
+--- Resultant attacks: IMSI catching
+---LTLSPEC G (! esm_failure ) & G( ! mme_network_detach)  -> G(ue_state = ue_registered & chan_UM = chanUM_id_response -> O (chan_MU= chanMU_id_request & mme_action =mme_id_request)) ;
+---###########################################
+
+
+---###########################################
+---Property 2: if UE FSM is in deregistered state, the UE will eventually move to the register_initiated and UE authenticates MME.
+--- Set the inj_adv_UM_enabled=TRUE, inj_adv_act_MU =FALSE
+--- Resultant attacks: Authentication Sync Failure, DoS attacks with tau_reject, service_reject, attach_reject, network detach, auth_reject
+---LTLSPEC 
+---G( 
+---	!esm_failure 
+---	& !mme_network_detach 
+---	& ! auth_req_mac_failure 
+---	& xres_matched_sres
+---	& !ue_detach_requested
+---	& ! sm_command_mac_failure 
+---	& ! security_capabilities_mismatch 
+--- & ! id_request_required 
+--- & ! inactivity_timer_expired 
+--- &  ue_auth_fail_count_check
+--- & inj_adv_act_UM != adv_UM_detach_req &
+---	inj_adv_act_UM != adv_UM_id_response & 
+---	inj_adv_act_UM != adv_UM_auth_mac_failure & 
+---	inj_adv_act_UM != adv_UM_auth_sync_failure &
+---	inj_adv_act_UM != adv_UM_auth_response &
+---	inj_adv_act_UM != adv_UM_sm_complete &
+---	inj_adv_act_UM != adv_UM_sm_reject &
+---	inj_adv_act_UM != adv_UM_attach_complete &
+---	inj_adv_act_UM != adv_UM_tau_request &
+---	inj_adv_act_UM != adv_UM_tau_complete &
+---	inj_adv_act_UM != adv_UM_service_request & 
+---	inj_adv_act_UM != adv_UM_null_action
+---) ->  
+--- 	G(ue_state=ue_deregistered & mobile_restart  -> (F (ue_state=ue_register_initiated & ue_auth_mme ))) ;
+----- #########################################
+
+
+
+---#########################################
+--- Property 3: The UE responds with a security_mode_complete message only if and only if the MME sent a security_mode_command message
+--- Set the inj_adv_MU_enabled=TRUE and inj_adv_act_UM = FALSE
+--- Resultant attacks: Traceability attack, DoS attacks with tau_reject, service_reject, attach_reject, network detach, auth_reject
+---LTLSPEC
+---	G( 	!esm_failure
+---		& X(!mobile_restart)
+---		& ! mme_network_detach
+---		& !ue_detach_requested
+---		& !ue_inactivity_detected
+---		& !sm_command_mac_failure
+---		& ! paging_occasion
+---		& ! ta_changed
+---		& ! id_request_required
+---		& inj_adv_act_MU != adv_MU_auth_reject
+---		& inj_adv_act_MU != adv_MU_attach_reject
+---		& inj_adv_act_MU != adv_MU_network_detach_req
+---		& inj_adv_act_MU != adv_MU_paging_GUTI
+---		& inj_adv_act_MU != adv_MU_paging_IMSI
+---		& inj_adv_act_MU != adv_MU_tau_reject 
+---		& inj_adv_act_MU != adv_MU_service_reject
+---	)
+---	->
+---		G((ue_state = ue_registered
+---		& ue_attach_completed
+---        & chan_UM = chanUM_sm_complete) -> O (chan_MU = chanMU_security_mode_command &  mme_action = mme_security_mode_command)) ;
+----##########################################		
+
+
+---#########################################
+--- Property 4: The UE responds with a security_mode_complete message only if and only if the UE receives a valid security_mode_command message.
+--- Set the inj_adv_MU_enabled=TRUE and inj_adv_act_UM = FALSE
+--- Resultant attacks: Traceability attack, DoS attacks with tau_reject, service_reject, attach_reject, network detach, auth_reject
+---LTLSPEC
+---	G( 	!esm_failure
+---		& X(!mobile_restart)
+---		& ! mme_network_detach
+---		& !ue_detach_requested
+---		& !ue_inactivity_detected
+---		& !sm_command_mac_failure
+---		& ! paging_occasion
+---		& ! ta_changed
+---		& ! id_request_required
+---		& inj_adv_act_MU != adv_MU_auth_reject
+---		& inj_adv_act_MU != adv_MU_attach_reject
+---		& inj_adv_act_MU != adv_MU_network_detach_req
+---		& inj_adv_act_MU != adv_MU_paging_GUTI
+---		& inj_adv_act_MU != adv_MU_paging_IMSI
+---		& inj_adv_act_MU != adv_MU_tau_reject
+---		& inj_adv_act_MU != adv_MU_service_reject
+---	)
+---	->
+---		G((ue_state = ue_registered
+---		& ue_attach_completed
+---        & ue_action = ue_sm_complete) -> Y (mme_action=mme_security_mode_command)) ;
+--- COMMENT: ... -> O(chan_MU = chanMU_security_mode_command)  was not working
+----##########################################		
+
+
+---#########################################
+--- Property 5: The UE sends a service_request only if the MME sent the paging with GUTI message   
+--- Set the inj_adv_MU_enabled=TRUE and inj_adv_act_UM = FALSE
+--- Resultant attack: Paging channel hijacking
+---LTLSPEC   
+---	G( 	!esm_failure
+---		& X(!mobile_restart)
+---		& ! mme_network_detach
+---		& !ue_detach_requested
+---		& !sm_command_mac_failure
+---		& ! ta_changed
+---		& ! id_request_required
+---		& inj_adv_act_MU != adv_MU_auth_reject
+---		& inj_adv_act_MU != adv_MU_attach_reject
+---		& inj_adv_act_MU != adv_MU_network_detach_req
+---		& inj_adv_act_MU != adv_MU_tau_reject
+---	)		
+---	-> 
+---		G((ue_action = ue_service_request) -> Y (mme_action = mme_paging_GUTI)); 
+----##########################################		
+
+
+
+---#########################################
+--- Property 6: If the MME sends a security mode command message, the security context will be eventually updated.
+--- Set the inj_adv_MU_enabled=FALSE and inj_adv_act_UM = TRUE
+--- Resultant attacks: Traceability attack, DoS attacks with tau_reject, service_reject, attach_reject, network detach, auth_reject
+---LTLSPEC
+---	G( 	!esm_failure &
+---		X(!mobile_restart) &
+---		! mme_network_detach &
+---		!ue_detach_requested &
+---		!ue_inactivity_detected &
+---		!sm_command_mac_failure &
+---		! paging_occasion &
+---		! ta_changed &
+---		! id_request_required &
+---		xres_matched_sres &
+---		! security_capabilities_mismatch &
+---		inj_adv_act_UM != adv_UM_null_action &
+---		inj_adv_act_UM != adv_UM_attach_req &
+---		inj_adv_act_UM != adv_UM_detach_req &
+---		inj_adv_act_UM != adv_UM_id_response &
+---		inj_adv_act_UM != adv_UM_auth_mac_failure &
+---		inj_adv_act_UM != adv_UM_auth_sync_failure &
+---		inj_adv_act_UM != adv_UM_auth_response &
+---		inj_adv_act_UM != adv_UM_sm_complete &
+---		inj_adv_act_UM != adv_UM_attach_complete &
+---		inj_adv_act_UM != adv_UM_tau_request &
+---		inj_adv_act_UM != adv_UM_tau_complete &
+---		inj_adv_act_UM != adv_UM_service_request 
+---		
+---	)
+---	->
+---		G((mme_action=mme_security_mode_command)
+---		-> (F (mme_security_context_updated))) ;
+
+----##########################################		
+
+
+---#########################################
+--- Property 7: The MME is in the service_initiated state and ue sends service_request message, the MME will eventually move to the registered_state
+--- Set the inj_adv_MU_enabled=FALSE and inj_adv_act_UM = TRUE
+--- Resultant attacks: serivce hijacking, DoS of paging response (Golde et al.)
+---LTLSPEC
+---		G( 	!esm_failure &
+---		X(!mobile_restart) &
+---		! mme_network_detach &
+---		!ue_detach_requested &
+---		!sm_command_mac_failure &
+---		! ta_changed &
+---		! id_request_required &
+---		xres_matched_sres &
+---		! security_capabilities_mismatch &
+---		inj_adv_act_UM != adv_UM_null_action &
+---		inj_adv_act_UM != adv_UM_attach_req &
+---		inj_adv_act_UM != adv_UM_detach_req &
+---		inj_adv_act_UM != adv_UM_id_response &
+---		inj_adv_act_UM != adv_UM_auth_response &
+---		inj_adv_act_UM != adv_UM_auth_mac_failure &
+---		inj_adv_act_UM != adv_UM_auth_sync_failure &
+---		inj_adv_act_UM != adv_UM_sm_complete &
+---		inj_adv_act_UM != adv_UM_sm_reject &
+---		inj_adv_act_UM != adv_UM_attach_complete &
+---		inj_adv_act_UM != adv_UM_tau_request &
+---		inj_adv_act_UM != adv_UM_tau_complete
+---
+---	)
+---	->
+---		G((mme_state=mme_service_initiated & ue_action=ue_service_request)
+---		-> (F (mme_state = mme_registered))) ;
+---#######################################
+
+---#########################################
+--- Property 8: The UE will respond with the guti_reallocation_complete message only if the MME sends adv_MU_guti_reallocation_command
+--- Set the inj_adv_MU_enabled=TRUE and inj_adv_act_UM = FALSE
+--- Resultant attacks: linkability of GUTI/TMSI reallocation (Arapinis et al.)
+LTLSPEC
+	G( 	!esm_failure
+		& X(!mobile_restart)
+		& ! mme_network_detach
+		& !ue_detach_requested
+		& !ue_inactivity_detected
+		& !sm_command_mac_failure
+		& ! paging_occasion
+		& ! ta_changed
+		& ! id_request_required
+		& !cipher_suite_change
+		& inj_adv_act_MU != adv_MU_auth_reject
+		& inj_adv_act_MU != adv_MU_attach_reject
+		& inj_adv_act_MU != adv_MU_network_detach_req
+		& inj_adv_act_MU != adv_MU_paging_GUTI
+		& inj_adv_act_MU != adv_MU_paging_IMSI
+		& inj_adv_act_MU != adv_MU_tau_reject
+		& inj_adv_act_MU != adv_MU_service_reject
+	)
+	->
+		G((ue_attach_completed
+        & ue_action = ue_guti_reallocation_complete) -> Y (mme_action=mme_guti_reallocation_command)) ;
+---#######################################

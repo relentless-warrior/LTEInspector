@@ -1,0 +1,23 @@
+(* Model for checking linkability of 4G-3GPP Detach Process *)
+
+(* Communication channel between UE to MME for the NAS layer messages *)
+free s1MME: channel.
+
+(* Communication channel for PAGING messages *)
+free PCCH: channel. 
+
+(* Constants used in 4G messages *)
+const PAGING: bitstring.
+const ATTACH_REQUEST: bitstring.
+
+let paging_ue = 
+	in(PCCH, (=PAGING, imsi: bitstring));
+	out(s1MME, (ATTACH_REQUEST, imsi)).
+	
+let paging_enodeb (imsi: bitstring) = 
+	out(PCCH, (PAGING, imsi));
+	in(s1MME, (=ATTACH_REQUEST, imsi2: bitstring)).
+    
+process
+	new imsi1: bitstring; new imsi2: bitstring;
+	(paging_enodeb(imsi1) | paging_enodeb(imsi2) | paging_enodeb(choice[imsi1, imsi2]) | !paging_ue)

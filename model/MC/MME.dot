@@ -1,0 +1,126 @@
+digraph MME{
+rankdir = LR;
+size = "8,5"
+node [shape = circle, label="mme_deregistered"]mme_deregistered;
+node [shape = circle, label="mme_register_initiated"]mme_register_initiated;
+node [shape = circle, label="mme_registered"]mme_registered;
+node [shape = circle, label="mme_idle"]mme_idle;
+node [shape = circle, label="mme_tau_initiated"]mme_tau_initiated;
+node [shape = circle, label="mme_service_initiated"]mme_service_initiated;
+mme_deregistered -> mme_deregistered [label = "mme_T1:  mme_network_detach /
+network_detach_req"]
+mme_deregistered -> mme_deregistered [label = "mme_T2:  chan_UM=chanUM_attach_req & esm_failure & !mme_network_detach/
+attach_reject"]
+mme_deregistered -> mme_register_initiated [label = "mme_T3:  chan_UM=chanUM_attach_req & !esm_failure & !id_request_required & ! mme_network_detach /
+auth_request, mme_wait_for = auth_response, mme_ue_shared_seq = next(mme_seq), mme_seq = ((mme_seq + 1) mod 32), mme_auth_fail_count = 0, mme_security_context_exist= FALSE, mme_security_context_updated= FALSE, mme_attach_completed= FALSE, mme_sm_reject_count= 0"]
+mme_deregistered -> mme_register_initiated [label = "mme_T4:  chan_UM=chanUM_attach_req & !esm_failure & id_request_required  & ! mme_network_detach/
+id_request, mme_wait_for = id_response"]
+mme_register_initiated -> mme_deregistered [label = "mme_T5: mme_network_detach/
+network_detach_req"]
+mme_register_initiated -> mme_deregistered [label = "mme_T6:  chan_UM=chanUM_detach_req  & ! mme_network_detach/
+detach_accept"]
+mme_register_initiated -> mme_deregistered [label = "mme_T7:  chan_UM=chanUM_attach_req & esm_failure  & ! mme_network_detach/
+attach_reject"]
+mme_register_initiated -> mme_register_initiated [label = "mme_T8:  chan_UM=chanUM_attach_req & !esm_failure & !id_request_required  & !mme_security_context_exist & !mme_attach_completed & ! mme_network_detach /
+auth_request, mme_wait_for = auth_response, mme_ue_shared_seq = next(mme_seq), mme_seq = ((mme_seq + 1) mod 32), mme_auth_fail_count = 0, mme_security_context_exist= FALSE, mme_security_context_updated= FALSE, mme_sm_reject_count= 0"]
+mme_register_initiated -> mme_register_initiated [label = "mme_T9:  chan_UM=chanUM_attach_req & !esm_failure & !id_request_required  & mme_security_context_exist & mme_attach_completed & ! mme_network_detach /
+attach_accept, mme_wait_for = attach_response"]
+mme_register_initiated -> mme_register_initiated [label = "mme_T10:  chan_UM=chanUM_attach_req & !esm_failure & id_request_required  & ! mme_network_detach/
+id_request, mme_wait_for = id_response, mme_ue_shared_seq = next(mme_seq), mme_seq = ((mme_seq + 1) mod 32), mme_auth_fail_count = 0, mme_security_context_exist= FALSE, mme_security_context_updated= FALSE, mme_sm_reject_count= 0"]
+mme_register_initiated -> mme_deregistered [label = "mme_T11: chan_UM=chanUM_attach_req & !mme_auth_fail_count_check  & ! mme_network_detach/
+attach_reject"]
+mme_register_initiated -> mme_deregistered [label = "mme_T12:  chan_UM=chanUM_auth_mac_failure & mme_wait_for=auth_response & GUTI_IMSI_mapping_correct  & ! mme_network_detach/
+auth_reject"]
+mme_register_initiated -> mme_register_initiated [label = "mme_T13:  chan_UM=chanUM_auth_mac_failure & mme_wait_for=auth_response & !GUTI_IMSI_mapping_correct  & ! mme_network_detach/
+id_request, mme_wait_for = id_response, (mme_auth_fail_count = mme_auth_fail_count + 1)"]
+mme_register_initiated -> mme_register_initiated [label = "mme_T14:  chan_UM=chanUM_id_response  & mme_wait_for=id_response & ! mme_network_detach/
+auth_request, mme_wait_for = auth_response"]
+mme_register_initiated -> mme_register_initiated [label = "mme_T15:  chan_UM=chanUM_auth_sync_failure & mme_wait_for=auth_response & mme_auth_fail_count_check & ! mme_network_detach/
+auth_request, mme_wait_for = auth_response, mme_auth_fail_count = mme_auth_fail_count + 1, mme_ue_shared_seq = next(mme_seq), mme_seq = ((mme_seq + 1) mod 32)"]
+mme_register_initiated -> mme_deregistered [label = "mme_T16:  chan_UM=chanUM_auth_sync_failure & mme_wait_for=auth_response & !mme_auth_fail_count_check & ! mme_network_detach/
+auth_reject"]
+mme_register_initiated -> mme_register_initiated [label = "mme_T17:  chan_UM=chanUM_auth_response & mme_wait_for=auth_response & xres_matched_sres & ! mme_network_detach/
+security_mode_command, mme_wait_for = sm_response"]
+mme_register_initiated -> mme_deregistered [label = "mme_T18:  chan_UM=chanUM_auth_response & mme_wait_for=auth_response & !xres_matched_sres & ! mme_network_detach/
+auth_reject"]
+mme_register_initiated -> mme_register_initiated [label = "mme_T19:  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & mme_sm_reject_count_check  & ! mme_network_detach/
+security_mode_command, mme_wait_for = sm_response, mme_sm_reject_count = mme_sm_reject_count + 1, mme_security_context_updated = FALSE"]
+mme_register_initiated -> mme_deregistered [label = "mme_T20:  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & !mme_sm_reject_count_check & !mme_security_context_exist & ! mme_network_detach/
+attach_reject, mme_sm_reject_count = 0, mme_security_context_updated = FALSE"]
+mme_register_initiated -> mme_register_initiated [label = "mme_T21:  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & !mme_sm_reject_count_check & mme_security_context_exist & ! mme_network_detach/
+attach_accept, mme_wait_for = attach_response, mme_sm_reject_count = 0, mme_security_context_updated = FALSE"]
+mme_register_initiated -> mme_register_initiated [label = "mme_T22:  chan_UM=chanUM_sm_complete & mme_wait_for=sm_response & !mme_network_detach/
+attach_accept, mme_wait_for = attach_response, mme_sm_reject_count = 0, mme_security_context_exist = TRUE, mme_security_context_updated = TRUE"]
+mme_register_initiated -> mme_registered [label = "mme_T23:  chan_UM=chanUM_attach_complete & mme_wait_for=attach_response & !mme_network_detach/
+mme_sm_reject_count = 0, mme_attach_completed = TRUE"]
+mme_registered -> mme_deregistered [label = "mme_T24:  mme_network_detach  & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change & !GUTI_reallocation_required/
+network_detach_req"]
+mme_registered -> mme_deregistered [label = "mme_T25:  chan_UM=chanUM_detach_req  & ! mme_network_detach & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change & !GUTI_reallocation_required/
+detach_accept"]
+mme_registered -> mme_deregistered [label = "mme_T26:  chan_UM=chanUM_attach_req & esm_failure & ! mme_network_detach & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change & !GUTI_reallocation_required/
+attach_reject"]
+mme_registered -> mme_register_initiated [label = "mme_T27:  chan_UM=chanUM_attach_req & !esm_failure & !id_request_required  & !mme_security_context_exist & !mme_attach_completed & ! mme_network_detach  & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change & !GUTI_reallocation_required/
+auth_request, mme_ue_shared_seq = next(mme_seq), mme_seq = ((mme_seq + 1) mod 32), mme_auth_fail_count = 0, mme_security_context_exist= FALSE, mme_security_context_updated= FALSE, mme_sm_reject_count= 0"]
+mme_registered -> mme_register_initiated [label = "mme_T28:  chan_UM=chanUM_attach_req & !esm_failure & !id_request_required  & mme_security_context_exist & mme_attach_completed & ! mme_network_detach  & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change  & !GUTI_reallocation_required/
+attach_accept"]
+mme_registered -> mme_register_initiated [label = "mme_T29:  chan_UM=chanUM_attach_req & !esm_failure & id_request_required  & ! mme_network_detach  & !ue_inactivity_detected & !mme_auth_required & !cipher_suite_change & !GUTI_reallocation_required/
+id_request, mme_wait_for = id_response, mme_ue_shared_seq = next(mme_seq), mme_seq = ((mme_seq + 1) mod 32), mme_auth_fail_count = 0, mme_security_context_exist= FALSE, mme_security_context_updated= FALSE, mme_sm_reject_count= 0"]
+mme_registered -> mme_registered [label = "mme_T30:  mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required/
+auth_request, mme_wait_for = auth_response, mme_ue_shared_seq = next(mme_seq), mme_seq = ((mme_seq + 1) mod 32), mme_auth_fail_count = 0"]
+mme_registered -> mme_registered [label = "mme_T31:  GUTI_reallocation_required & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change/
+guti_rellocation_command, mme_wait_for = guti_reallocation_response"]
+mme_registered -> mme_registered [label = "mme_T32:  chan_UM=chanUM_guti_reallocation_complete & mme_wait_for=guti_reallocation_response & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required/
+null_action"]
+mme_registered -> mme_registered [label = "mme_T33:  chan_UM=chanUM_auth_mac_failure & mme_wait_for=auth_response & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change  & !GUTI_reallocation_required/
+(mme_auth_fail_count = mme_auth_fail_count + 1), auth_request, mme_wait_for = auth_response"]
+mme_registered -> mme_registered [label = "mme_T34:  chan_UM=chanUM_auth_sync_failure & mme_auth_fail_count_check &  !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required/
+auth_request, mme_wait_for = auth_response, mme_auth_fail_count = mme_auth_fail_count + 1, mme_ue_shared_seq = next(mme_seq), mme_seq = ((mme_seq + 1) mod 32)"]
+mme_registered -> mme_deregistered [label = "mme_T35:  chan_UM=chanUM_auth_sync_failure & mme_wait_for=auth_response & !mme_auth_fail_count_check  & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required/
+auth_reject"]
+mme_registered -> mme_registered [label = "mme_T36:  chan_UM=chanUM_auth_response & mme_wait_for=auth_response & xres_matched_sres & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required/
+security_mode_command, mme_wait_for = sm_response"]
+mme_registered -> mme_deregistered [label = "mme_T37:  chan_UM=chanUM_auth_response & mme_wait_for=auth_response & !xres_matched_sres & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required/
+auth_reject"]
+mme_registered -> mme_registered [label = "mme_T38:  cipher_suite_change & !mme_auth_required & ! mme_network_detach  & !GUTI_reallocation_required/
+security_mode_command, mme_wait_for = sm_response, mme_security_context_updated = FALSE"]
+mme_registered -> mme_registered [label = "mme_T39:  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & mme_sm_reject_count_check & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required/
+security_mode_command, mme_wait_for = sm_response, mme_sm_reject_count = mme_sm_reject_count + 1, mme_security_context_updated = FALSE"]
+mme_registered -> mme_deregistered [label = "mme_T40:  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & !mme_sm_reject_count_check & !mme_security_context_exist & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required/
+mme_sm_reject_count = 0, mme_security_context_updated = FALSE"]
+mme_registered -> mme_registered [label = "mme_T41:  chan_UM=chanUM_sm_reject & mme_wait_for=sm_response & !mme_sm_reject_count_check & mme_security_context_exist & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required/
+attach_accept, mme_wait_for = attach_response, mme_sm_reject_count = 0, mme_security_context_updated = FALSE"]
+mme_registered -> mme_registered [label = "mme_T42:  chan_UM=chanUM_sm_complete & mme_wait_for=sm_response & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change/
+mme_sm_reject_count = 0, mme_security_context_exist = TRUE, mme_security_context_updated = TRUE"]
+mme_registered -> mme_tau_initiated [label = "mme_T43:  chan_UM=chanUM_tau_request & !mme_auth_required & ! mme_network_detach  & !ue_inactivity_detected & !cipher_suite_change & !GUTI_reallocation_required/
+id_request, mme_wait_for = id_response"]
+mme_registered -> mme_idle [label = "mme_T44:  mme_security_context_exist & ue_inactivity_detected & !mme_auth_required & ! mme_network_detach & !cipher_suite_change/
+null_action"]
+mme_tau_initiated -> mme_tau_initiated [label = "mme_T45: id_request_required & !GUTI_reallocation_required/
+id_request, mme_wait_for = id_response"]
+mme_tau_initiated -> mme_tau_initiated [label = "mme_T46: GUTI_reallocation_required & !id_request_required /
+guti_reallocation_command, mme_wait_for = guti_reallocation_response"]
+mme_tau_initiated -> mme_tau_initiated [label = "mme_T47:  chan_UM=chanUM_guti_reallocation_complete & mme_wait_for=guti_reallocation_response & !tau_failure & !id_request_required & !GUTI_reallocation_required/
+tau_accpet, mme_wait_for = tau_response"]
+mme_tau_initiated -> mme_tau_initiated [label = "mme_T48:  chan_UM=chanUM_id_response & mme_wait_for=id_response & !tau_failure & !id_request_required & !GUTI_reallocation_required/
+tau_accpet, mme_wait_for = tau_response"]
+mme_tau_initiated -> mme_deregistered [label = "mme_T49:  chan_UM=chanUM_id_response & mme_wait_for=id_response & tau_failure & !id_request_required & !GUTI_reallocation_required/
+tau_reject"]
+mme_tau_initiated -> mme_tau_initiated [label = "mme_T50:  !id_request_required & !tau_failure & !GUTI_reallocation_required/
+tau_accept"]
+mme_tau_initiated -> mme_deregistered [label = "mme_T51:  !id_request_required & !GUTI_reallocation_required & tau_failure/
+tau_reject"]
+mme_tau_initiated -> mme_registered [label = "mme_T52:  chan_UM=chanUM_tau_complete & mme_wait_for=tau_response  & !id_request_required & !GUTI_reallocation_required/
+null_action"]
+mme_idle -> mme_deregistered [label = "mme_T53:  paging_IMSI_required & paging_occasion/
+paging_IMSI"]
+mme_idle -> mme_service_initiated [label = "mme_T54:  paging_GUTI_required & paging_occasion /
+paging_GUTI, mme_wait_for = service_response"]
+mme_idle -> mme_tau_initiated [label = "mme_T55:  chan_UM = chanUM_tau_request & !paging_occasion/
+id_requested, mme_wait_for = id_response"]
+mme_service_initiated -> mme_deregistered [label = "mme_T56:  mme_network_detach/
+network_detach_req"]
+mme_service_initiated -> mme_registered [label = "mme_T57:  chan_UM = chanUM_service_request & mme_wait_for=service_response & service_completed & !mme_network_detach/
+service_complete"]
+mme_service_initiated -> mme_deregistered [label = "mme_T58:  chan_UM = chanUM_service_request & mme_wait_for=service_response & !service_completed & ! mme_network_detach/
+service_reject"]
+}

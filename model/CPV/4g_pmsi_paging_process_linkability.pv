@@ -1,0 +1,43 @@
+(* Model for checking linkability of 4G paging procedure with pseudo IMSI (PMSI) *)
+
+(* Function to conditionally select data *)
+fun switch(bitstring, bitstring, bitstring, bitstring, bitstring): bitstring
+	reduc forall a: bitstring, b: bitstring, c: bitstring, d: bitstring; switch(a, a, b, c, d) = b
+	otherwise forall a: bitstring, b: bitstring, c: bitstring, d: bitstring; switch(a, b, c, a, d) = d.
+
+
+(* Communication channel between UE to MME for the NAS layer messages *)
+free s1MME: channel.
+
+(* Communication channel for Paging messages *)
+free PCCH: channel.
+
+(* Constants used in 4G messages *)
+const PAGING: bitstring.
+const ATTACH_REQUEST: bitstring.
+
+(* Identities for the two UEs *)
+free A: bitstring.
+free B: bitstring.
+
+(* Process implementing UE's Paging Message (with IMSI) Procedure *)	
+let paging_ue (id1: bitstring, pmsi1_old: bitstring, pmsi1_new: bitstring, id2: bitstring, pmsi2_old: bitstring, pmsi2_new: bitstring) =
+	in(PCCH, (=PAGING, pmsi_in: bitstring));
+	if pmsi_in = pmsi1_old then(
+		out(s1MME, (ATTACH_REQUEST, pmsi1_new)))
+	else (
+		out(s1MME, (ATTACH_REQUEST, pmsi2_new))).
+		
+(* Process implementing eNodeB/MME's paging procedure *)		
+let paging_enodeb (id: bitstring, pmsi: bitstring) =
+	out(PCCH, (PAGING, pmsi)).
+
+process
+	new pmsi1a: bitstring; new pmsi2a: bitstring; new pmsi3a: bitstring;
+	new pmsi1b: bitstring; new pmsi2b: bitstring; new pmsi3b: bitstring;
+	(
+		!paging_enodeb(A, pmsi1a)| !paging_enodeb (B, pmsi1b) |
+		!paging_enodeb(choice[A, B], choice[pmsi2a, pmsi2b]) |
+		!paging_ue(A, pmsi1a, pmsi2a, B, pmsi1b, pmsi2b) |
+		!paging_ue(A, pmsi2a, pmsi3a, B, pmsi2b, pmsi3b)
+	)

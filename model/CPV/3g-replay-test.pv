@@ -1,0 +1,121 @@
+type key.
+
+set traceDisplay = long.
+
+(* Function to conditionally select data *)
+fun switch(bitstring, bitstring, bitstring, bitstring, bitstring): bitstring
+	reduc forall a: bitstring, b: bitstring, c: bitstring, d: bitstring; switch(a, a, b, c, d) = b
+	otherwise forall a: bitstring, b: bitstring, c: bitstring, d: bitstring; switch(a, b, c, a, d) = d. 
+
+
+(* Functions for encryption and decryption *)
+fun enc(bitstring, key): bitstring.
+reduc forall m: bitstring, k: key; dec(enc(m, k), k) = m.
+
+(* Function to retrieve key corresponding to an IMSI *)
+fun getKey(bitstring): key [private].
+(* Get sequence number for IMSI *)
+fun getSQN(bitstring): bitstring [private].
+
+free c: channel. 
+
+(*free ID1: bitstring.*)
+(*free ID2: bitstring. *)
+free KEY1:key [private]. 
+free KEY2:key [private].
+(* Authentication Management Field *)
+free AMF: bitstring [private].
+
+const ATTACH_REQUEST: bitstring.
+const AUTH_REQUEST: bitstring.
+const AUTH_RESPONSE: bitstring.
+const SECURITY_MODE_COMMAND: bitstring.
+const SECURITY_MODE_COMPLETE: bitstring.
+const ATTACH_ACCEPT: bitstring.
+const ATTACH_COMPLETE: bitstring.
+
+
+(* 3G specific functions *)
+fun f1(key, bitstring, bitstring, bitstring): bitstring.
+fun f2(key, bitstring): bitstring.
+fun f3(key, bitstring): key.
+fun f4(key, bitstring): key.
+fun f5(key, bitstring): key.
+
+(* Add support for XOR operation, treating it like an encryption *)
+fun xor_enc(bitstring, key): bitstring.
+reduc forall m: bitstring, k: key; xor_dec(xor_enc(m, k), k) = m.
+
+event ue_sent_attach_request(bitstring).
+event ue_received_auth_request (bitstring).
+event ue_sent_auth_response(bitstring).
+event mme_sent_auth_request(bitstring).
+event mme_accepted_auth_response(bitstring).
+event mme_sent_attach_accept(bitstring).
+event mme_received_attach_complete(bitstring).
+event ue_sent_attach_complete(bitstring).
+
+
+(*query id:bitstring; inj-event(ue_received_auth_request(id)) ==> inj-event(mme_sent_auth_request(id)).*)
+(*query id:bitstring; inj-event(mme_received_auth_response(id)) ==> inj-event(ue_sent_auth_response(id)).*)
+(*query imsi:bitstring; inj-event(mme_accepted_auth_response(imsi)) ==> inj-event(ue_sent_attach_request(imsi)).*)
+query imsi:bitstring; inj-event(mme_received_attach_complete(imsi)) ==> inj-event(ue_sent_attach_request(imsi)).
+
+let UE(IMSI:bitstring, KEY:key) = 
+	event ue_sent_attach_request(IMSI); 
+	(* Get the local key *)
+	(*let KEY = getKey(IMSI) in*)
+	out(c, (ATTACH_REQUEST, IMSI)); 
+	in(c, (=AUTH_REQUEST, rand:bitstring, (sqn_ak: bitstring, amf: bitstring, mac: bitstring)));
+	event ue_received_auth_request(IMSI);
+	(* Compute authentication key *)
+	let ak = f5(KEY, rand) in
+	(* Retrieve sequence number *)
+	let xsqn = xor_dec(sqn_ak, ak) in
+	(* Check the sequence number and MAC *)
+	if mac = f1(KEY, xsqn, amf, rand) then
+		let sres = f2(KEY, rand) in
+		let ck = f3(KEY, rand) in
+		let ik = f4(KEY, rand) in
+		event ue_sent_auth_response(IMSI);
+		out(c, (AUTH_RESPONSE, sres));
+		in(c, sm_command:bitstring);
+		let (=SECURITY_MODE_COMMAND, received_smc_mac:bitstring) = sm_command in
+		let x_smc_mac:bitstring = f2(KEY, SECURITY_MODE_COMMAND) in 	
+		if received_smc_mac = x_smc_mac then		
+			out(c, SECURITY_MODE_COMPLETE);
+			in(c, =ATTACH_ACCEPT);
+			event ue_sent_attach_complete(IMSI);
+			out(c, ATTACH_COMPLETE).
+		
+let MME(KEY:key) = 
+	in(c, (msg1:bitstring, IMSI:bitstring));
+	if msg1 = ATTACH_REQUEST then  
+		event mme_sent_auth_request(IMSI);
+		new nonce_auth_req:bitstring;
+		(* Retrieve the key *)
+		(*let KEY = getKey(IMSI) in*)
+		(* Get the sequence number *)
+		(*let sqn = getSQN(IMSI) in*)
+		(* Generate and return authentication related data and session keys *)
+		new rand: bitstring;
+		new sqn:bitstring;
+		let mac = f1(KEY, sqn, AMF, rand) in
+		let xres = f2(KEY, rand) in
+		let ck = f3(KEY, rand) in
+		let ik = f4(KEY, rand) in
+		let ak = f5(KEY, rand) in
+		let autn = (xor_enc(sqn, ak), AMF, mac) in
+		out(c, (AUTH_REQUEST, rand, autn));
+		in(c, (=AUTH_RESPONSE, sres:bitstring));
+		if xres = sres then
+			event mme_accepted_auth_response(IMSI);
+			let smc_mac = f2(KEY, SECURITY_MODE_COMMAND) in
+			out(c, (SECURITY_MODE_COMMAND, smc_mac));
+			in(c, =SECURITY_MODE_COMPLETE);
+			out(c, ATTACH_ACCEPT);
+			in(c, =ATTACH_COMPLETE);
+			event mme_received_attach_complete(IMSI).		
+process
+	new imsi1:bitstring;
+	(!UE(imsi1, KEY1) | !MME (KEY1))

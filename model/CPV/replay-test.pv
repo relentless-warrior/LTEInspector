@@ -1,0 +1,53 @@
+type key.
+
+set traceDisplay = long.
+
+(* Functions for encryption and decryption *)
+fun enc(bitstring, key): bitstring.
+reduc forall m: bitstring, k: key; dec(enc(m, k), k) = m.
+
+free c: channel. 
+
+free ID1: bitstring.
+free ID2: bitstring. 
+free KEY1:key [private]. 
+free KEY2:key [private].
+
+const LOGIN: bitstring.
+const SUCCESS: bitstring.
+const FAILIRE: bitstring.
+
+
+event client_login_attempt(bitstring).
+event client_login_successful (bitstring).
+event client_login_failure (bitstring).
+event login_request_from_client(bitstring).
+event server_login_successful(bitstring).
+event server_login_failure(bitstring).
+
+(*query id:bitstring; inj-event(login_request_from_client(id)) ==> inj-event(client_login_attempt(id)).*)
+(*query id:bitstring; inj-event(client_login_successful(id)) ==> inj-event(server_login_successful(id)).*)
+query id:bitstring; inj-event(server_login_successful(id)) ==> inj-event(client_login_attempt(id)).
+let client(ID:bitstring,KEY:key) = 
+	event client_login_attempt(ID); 
+	new nonce:bitstring;
+	out(c, enc((LOGIN, ID, nonce), KEY)); 
+	in(c, val:bitstring);
+	let (msg:bitstring, id:bitstring) = dec(val, KEY) in
+	if msg = SUCCESS then (
+		event client_login_successful(ID))
+	else (
+		event client_login_failure(ID)).
+	
+let server(KEY:key) = 
+	in(c, val:bitstring) ;
+	(*event login_request_from_client(val);*)
+	let (msg:bitstring, ID:bitstring, nonce:bitstring)  = dec(val, KEY) in  
+	if msg = LOGIN then ( 
+		event server_login_successful(ID);
+		out(c, enc((SUCCESS, ID),KEY)))
+	else (
+		event server_login_failure(ID)).
+
+process
+	(!  client(ID1,KEY1) | ! server(KEY1))

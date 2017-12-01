@@ -1,0 +1,426 @@
+Process:
+(
+    {1}!
+    {2}event ue_sent_attach_request(ID1);
+    {3}out(c, (ATTACH_REQUEST,ID1));
+    {4}in(c, (=AUTH_REQUEST,rand: bitstring,(sqn_ak: bitstring,amf: bitstring,mac: bitstring)));
+    {5}event ue_received_auth_request(ID1);
+    {6}let ak: key = f5(KEY1,rand) in
+    {7}let xsqn: bitstring = xor_dec(sqn_ak,ak) in
+    {8}if (mac = f1(KEY1,xsqn,amf,rand)) then
+    {9}let sres: bitstring = f2(KEY1,rand) in
+    {10}let ck: key = f3(KEY1,rand) in
+    {11}let ik: key = f4(KEY1,rand) in
+    {12}event ue_sent_auth_response(ID1);
+    {13}out(c, (AUTH_RESPONSE,sres))
+) | (
+    {14}!
+    {15}in(c, (msg1: bitstring,ID: bitstring));
+    {16}if (msg1 = ATTACH_REQUEST) then
+    {17}event mme_sent_auth_request(ID);
+    {18}new nonce_auth_req: bitstring;
+    {19}new rand_45: bitstring;
+    {20}new sqn: bitstring;
+    {21}let mac_46: bitstring = f1(KEY1,sqn,AMF,rand_45) in
+    {22}let xres: bitstring = f2(KEY1,rand_45) in
+    {23}let ck_47: key = f3(KEY1,rand_45) in
+    {24}let ik_48: key = f4(KEY1,rand_45) in
+    {25}let ak_49: key = f5(KEY1,rand_45) in
+    {26}let autn: bitstring = (xor_enc(sqn,ak_49),AMF,mac_46) in
+    {27}out(c, (AUTH_REQUEST,rand_45,autn));
+    {28}in(c, (=AUTH_RESPONSE,sres_50: bitstring));
+    {29}if (xres = sres_50) then
+    {30}event mme_received_auth_response(ID)
+)
+
+-- Query inj-event(mme_received_auth_response(id)) ==> inj-event(ue_sent_attach_request(id))
+Completing...
+Starting query inj-event(mme_received_auth_response(id)) ==> inj-event(ue_sent_attach_request(id))
+goal reachable: begin(ue_sent_attach_request(ID1[]), mac = f1(KEY1[],sqn[ID = id_640,msg1 = ATTACH_REQUEST,!1 = endsid_641],AMF[],rand_45[ID = id_640,msg1 = ATTACH_REQUEST,!1 = endsid_641]), amf = AMF[], sqn_ak = xor_enc(sqn[ID = id_640,msg1 = ATTACH_REQUEST,!1 = endsid_641],f5(KEY1[],rand_45[ID = id_640,msg1 = ATTACH_REQUEST,!1 = endsid_641])), rand = rand_45[ID = id_640,msg1 = ATTACH_REQUEST,!1 = endsid_641], @sid = @sid_642, @occ2 = @occ_cst) && attacker(id_640) -> end(endsid_641,mme_received_auth_response(id_640))
+Abbreviations:
+rand_702 = rand_45[ID = id_701,msg1 = ATTACH_REQUEST,!1 = endsid_700]
+sqn_703 = sqn[ID = id_701,msg1 = ATTACH_REQUEST,!1 = endsid_700]
+sqn_704 = sqn[ID = ID_647,msg1 = ATTACH_REQUEST,!1 = @sid_648]
+rand_705 = rand_45[ID = ID_647,msg1 = ATTACH_REQUEST,!1 = @sid_648]
+
+1. We assume as hypothesis that
+attacker(id_701).
+
+2. Using the function ATTACH_REQUEST the attacker may obtain ATTACH_REQUEST.
+attacker(ATTACH_REQUEST).
+
+3. By 2, the attacker may know ATTACH_REQUEST.
+By 1, the attacker may know id_701.
+Using the function 2-tuple the attacker may obtain (ATTACH_REQUEST,id_701).
+attacker((ATTACH_REQUEST,id_701)).
+
+4. The message (ATTACH_REQUEST,id_701) that the attacker may have by 3 may be received at input {15}.
+So the message (AUTH_REQUEST,rand_702,(xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702))) may be sent to the attacker at output {27}.
+attacker((AUTH_REQUEST,rand_702,(xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702)))).
+
+5. By 4, the attacker may know (AUTH_REQUEST,rand_702,(xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702))).
+Using the function 3-proj-3-tuple the attacker may obtain (xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702)).
+attacker((xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702))).
+
+6. By 5, the attacker may know (xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702)).
+Using the function 3-proj-3-tuple the attacker may obtain f1(KEY1[],sqn_703,AMF[],rand_702).
+attacker(f1(KEY1[],sqn_703,AMF[],rand_702)).
+
+7. The attacker has some term ID_647.
+attacker(ID_647).
+
+8. By 2, the attacker may know ATTACH_REQUEST.
+By 7, the attacker may know ID_647.
+Using the function 2-tuple the attacker may obtain (ATTACH_REQUEST,ID_647).
+attacker((ATTACH_REQUEST,ID_647)).
+
+9. The message (ATTACH_REQUEST,ID_647) that the attacker may have by 8 may be received at input {15}.
+So the message (AUTH_REQUEST,rand_705,(xor_enc(sqn_704,f5(KEY1[],rand_705)),AMF[],f1(KEY1[],sqn_704,AMF[],rand_705))) may be sent to the attacker at output {27}.
+attacker((AUTH_REQUEST,rand_705,(xor_enc(sqn_704,f5(KEY1[],rand_705)),AMF[],f1(KEY1[],sqn_704,AMF[],rand_705)))).
+
+10. By 9, the attacker may know (AUTH_REQUEST,rand_705,(xor_enc(sqn_704,f5(KEY1[],rand_705)),AMF[],f1(KEY1[],sqn_704,AMF[],rand_705))).
+Using the function 3-proj-3-tuple the attacker may obtain (xor_enc(sqn_704,f5(KEY1[],rand_705)),AMF[],f1(KEY1[],sqn_704,AMF[],rand_705)).
+attacker((xor_enc(sqn_704,f5(KEY1[],rand_705)),AMF[],f1(KEY1[],sqn_704,AMF[],rand_705))).
+
+11. By 10, the attacker may know (xor_enc(sqn_704,f5(KEY1[],rand_705)),AMF[],f1(KEY1[],sqn_704,AMF[],rand_705)).
+Using the function 2-proj-3-tuple the attacker may obtain AMF[].
+attacker(AMF[]).
+
+12. By 5, the attacker may know (xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702)).
+Using the function 1-proj-3-tuple the attacker may obtain xor_enc(sqn_703,f5(KEY1[],rand_702)).
+attacker(xor_enc(sqn_703,f5(KEY1[],rand_702))).
+
+13. By 12, the attacker may know xor_enc(sqn_703,f5(KEY1[],rand_702)).
+By 11, the attacker may know AMF[].
+By 6, the attacker may know f1(KEY1[],sqn_703,AMF[],rand_702).
+Using the function 3-tuple the attacker may obtain (xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702)).
+attacker((xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702))).
+
+14. By 4, the attacker may know (AUTH_REQUEST,rand_702,(xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702))).
+Using the function 2-proj-3-tuple the attacker may obtain rand_702.
+attacker(rand_702).
+
+15. Using the function AUTH_REQUEST the attacker may obtain AUTH_REQUEST.
+attacker(AUTH_REQUEST).
+
+16. By 15, the attacker may know AUTH_REQUEST.
+By 14, the attacker may know rand_702.
+By 13, the attacker may know (xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702)).
+Using the function 3-tuple the attacker may obtain (AUTH_REQUEST,rand_702,(xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702))).
+attacker((AUTH_REQUEST,rand_702,(xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702)))).
+
+17. The event ue_sent_attach_request(ID1[]) (with environment mac = f1(KEY1[],sqn_703,AMF[],rand_702), amf = AMF[], sqn_ak = xor_enc(sqn_703,f5(KEY1[],rand_702)), rand = rand_702, @sid = @sid_691, @occ2 = @occ_cst) may be executed at {2}.
+The message (AUTH_REQUEST,rand_702,(xor_enc(sqn_703,f5(KEY1[],rand_702)),AMF[],f1(KEY1[],sqn_703,AMF[],rand_702))) that the attacker may have by 16 may be received at input {4}.
+So the message (AUTH_RESPONSE,f2(KEY1[],rand_702)) may be sent to the attacker at output {13}.
+attacker((AUTH_RESPONSE,f2(KEY1[],rand_702))).
+
+18. By 17, the attacker may know (AUTH_RESPONSE,f2(KEY1[],rand_702)).
+Using the function 2-proj-2-tuple the attacker may obtain f2(KEY1[],rand_702).
+attacker(f2(KEY1[],rand_702)).
+
+19. Using the function AUTH_RESPONSE the attacker may obtain AUTH_RESPONSE.
+attacker(AUTH_RESPONSE).
+
+20. By 19, the attacker may know AUTH_RESPONSE.
+By 18, the attacker may know f2(KEY1[],rand_702).
+Using the function 2-tuple the attacker may obtain (AUTH_RESPONSE,f2(KEY1[],rand_702)).
+attacker((AUTH_RESPONSE,f2(KEY1[],rand_702))).
+
+21. The message (ATTACH_REQUEST,id_701) that the attacker may have by 3 may be received at input {15}.
+The message (AUTH_RESPONSE,f2(KEY1[],rand_702)) that the attacker may have by 20 may be received at input {28}.
+So event mme_received_auth_response(id_701) may be executed at {30} in session endsid_700.
+end(endsid_700,mme_received_auth_response(id_701)).
+
+
+Initial state
+
+Additional knowledge of the attacker:
+c
+ID1
+ID2
+a_707
+AUTH_RESPONSE
+AUTH_REQUEST
+ATTACH_REQUEST
+a_706
+--------------------------------------------------------------
+New processes:
+    (
+        !
+        event ue_sent_attach_request(ID1);
+        out(c, (ATTACH_REQUEST,ID1));
+        in(c, (=AUTH_REQUEST,rand: bitstring,(sqn_ak: bitstring,amf: bitstring,mac: bitstring)));
+        event ue_received_auth_request(ID1);
+        let ak: key = f5(KEY1,rand) in
+        let xsqn: bitstring = xor_dec(sqn_ak,ak) in
+        if (mac = f1(KEY1,xsqn,amf,rand)) then
+        let sres: bitstring = f2(KEY1,rand) in
+        let ck: key = f3(KEY1,rand) in
+        let ik: key = f4(KEY1,rand) in
+        event ue_sent_auth_response(ID1);
+        out(c, (AUTH_RESPONSE,sres))
+    ) | (
+        !
+        in(c, (msg1: bitstring,ID: bitstring));
+        if (msg1 = ATTACH_REQUEST) then
+        event mme_sent_auth_request(ID);
+        new nonce_auth_req: bitstring;
+        new rand_45: bitstring;
+        new sqn: bitstring;
+        let mac_46: bitstring = f1(KEY1,sqn,AMF,rand_45) in
+        let xres: bitstring = f2(KEY1,rand_45) in
+        let ck_47: key = f3(KEY1,rand_45) in
+        let ik_48: key = f4(KEY1,rand_45) in
+        let ak_49: key = f5(KEY1,rand_45) in
+        let autn: bitstring = (xor_enc(sqn,ak_49),AMF,mac_46) in
+        out(c, (AUTH_REQUEST,rand_45,autn));
+        in(c, (=AUTH_RESPONSE,sres_50: bitstring));
+        if (xres = sres_50) then
+        event mme_received_auth_response(ID)
+    )
+
+--------------------------------------------------------------
+1st process: Reduction |
+
+2nd process: Reduction ! 2 copy(ies)
+
+3rd process: Beginning of process MME(KEY1)
+
+2nd process: Beginning of process MME(KEY1)
+
+1st process: Reduction ! 1 copy(ies)
+
+1st process: Beginning of process UE(ID1, KEY1)
+
+1st process: event ue_sent_attach_request(ID1) executed
+
+1st process: out(c, (~M_777,~M_778)) with ~M_777 = ATTACH_REQUEST, ~M_778 = ID1 done
+
+New processes:
+(
+    in(c, (=AUTH_REQUEST,rand_767: bitstring,(sqn_ak_768: bitstring,amf_769: bitstring,mac_770: bitstring)));
+    event ue_received_auth_request(ID1);
+    let ak_771: key = f5(KEY1,rand_767) in
+    let xsqn_772: bitstring = xor_dec(sqn_ak_768,ak_771) in
+    if (mac_770 = f1(KEY1,xsqn_772,amf_769,rand_767)) then
+    let sres_773: bitstring = f2(KEY1,rand_767) in
+    let ck_774: key = f3(KEY1,rand_767) in
+    let ik_775: key = f4(KEY1,rand_767) in
+    event ue_sent_auth_response(ID1);
+    out(c, (AUTH_RESPONSE,sres_773))
+) | (
+    in(c, (msg1_757: bitstring,ID_758: bitstring));
+    if (msg1_757 = ATTACH_REQUEST) then
+    event mme_sent_auth_request(ID_758);
+    new nonce_auth_req: bitstring;
+    new rand_45: bitstring;
+    new sqn: bitstring;
+    let mac_759: bitstring = f1(KEY1,sqn,AMF,rand_45) in
+    let xres_760: bitstring = f2(KEY1,rand_45) in
+    let ck_761: key = f3(KEY1,rand_45) in
+    let ik_762: key = f4(KEY1,rand_45) in
+    let ak_763: key = f5(KEY1,rand_45) in
+    let autn_764: bitstring = (xor_enc(sqn,ak_763),AMF,mac_759) in
+    out(c, (AUTH_REQUEST,rand_45,autn_764));
+    in(c, (=AUTH_RESPONSE,sres_765: bitstring));
+    if (xres_760 = sres_765) then
+    event mme_received_auth_response(ID_758)
+) | (
+    in(c, (msg1_748: bitstring,ID_749: bitstring));
+    if (msg1_748 = ATTACH_REQUEST) then
+    event mme_sent_auth_request(ID_749);
+    new nonce_auth_req: bitstring;
+    new rand_45: bitstring;
+    new sqn: bitstring;
+    let mac_750: bitstring = f1(KEY1,sqn,AMF,rand_45) in
+    let xres_751: bitstring = f2(KEY1,rand_45) in
+    let ck_752: key = f3(KEY1,rand_45) in
+    let ik_753: key = f4(KEY1,rand_45) in
+    let ak_754: key = f5(KEY1,rand_45) in
+    let autn_755: bitstring = (xor_enc(sqn,ak_754),AMF,mac_750) in
+    out(c, (AUTH_REQUEST,rand_45,autn_755));
+    in(c, (=AUTH_RESPONSE,sres_756: bitstring));
+    if (xres_751 = sres_756) then
+    event mme_received_auth_response(ID_749)
+)
+
+--------------------------------------------------------------
+2nd process: in(c, (msg1_757: bitstring,ID_758: bitstring)) done with message (ATTACH_REQUEST,a_707)
+
+2nd process: if (ATTACH_REQUEST = ATTACH_REQUEST) succeeds
+
+2nd process: event mme_sent_auth_request(a_707) executed
+
+2nd process: new nonce_auth_req: bitstring creating nonce_auth_req_803
+
+2nd process: new rand_45: bitstring creating rand_721
+
+2nd process: new sqn: bitstring creating sqn_722
+
+2nd process: let mac_795: bitstring = f1(KEY1,sqn_722,AMF,rand_721) succeeds
+
+2nd process: let xres_804: bitstring = f2(KEY1,rand_721) succeeds
+
+2nd process: let ck_810: key = f3(KEY1,rand_721) succeeds
+
+2nd process: let ik_815: key = f4(KEY1,rand_721) succeeds
+
+2nd process: let ak_819: key = f5(KEY1,rand_721) succeeds
+
+2nd process: let autn_822: bitstring = (xor_enc(sqn_722,f5(KEY1,rand_721)),AMF,f1(KEY1,sqn_722,AMF,rand_721)) succeeds
+
+2nd process: out(c, (~M_827,~M_828,(~M_830,~M_831,~M_832))) with ~M_827 = AUTH_REQUEST, ~M_828 = rand_721, ~M_830 = xor_enc(sqn_722,f5(KEY1,rand_721)), ~M_831 = AMF, ~M_832 = f1(KEY1,sqn_722,AMF,rand_721) done
+
+Additional knowledge of the attacker:
+~M_832 = f1(KEY1,sqn_722,AMF,rand_721)
+~M_831 = AMF
+~M_830 = xor_enc(sqn_722,f5(KEY1,rand_721))
+~M_828 = rand_721
+--------------------------------------------------------------
+New processes:
+(
+    in(c, (=AUTH_REQUEST,rand_767: bitstring,(sqn_ak_768: bitstring,amf_769: bitstring,mac_770: bitstring)));
+    event ue_received_auth_request(ID1);
+    let ak_771: key = f5(KEY1,rand_767) in
+    let xsqn_772: bitstring = xor_dec(sqn_ak_768,ak_771) in
+    if (mac_770 = f1(KEY1,xsqn_772,amf_769,rand_767)) then
+    let sres_773: bitstring = f2(KEY1,rand_767) in
+    let ck_774: key = f3(KEY1,rand_767) in
+    let ik_775: key = f4(KEY1,rand_767) in
+    event ue_sent_auth_response(ID1);
+    out(c, (AUTH_RESPONSE,sres_773))
+) | (
+    in(c, (=AUTH_RESPONSE,sres_824: bitstring));
+    if (f2(KEY1,rand_721) = sres_824) then
+    event mme_received_auth_response(a_707)
+) | (
+    in(c, (msg1_748: bitstring,ID_749: bitstring));
+    if (msg1_748 = ATTACH_REQUEST) then
+    event mme_sent_auth_request(ID_749);
+    new nonce_auth_req: bitstring;
+    new rand_45: bitstring;
+    new sqn: bitstring;
+    let mac_750: bitstring = f1(KEY1,sqn,AMF,rand_45) in
+    let xres_751: bitstring = f2(KEY1,rand_45) in
+    let ck_752: key = f3(KEY1,rand_45) in
+    let ik_753: key = f4(KEY1,rand_45) in
+    let ak_754: key = f5(KEY1,rand_45) in
+    let autn_755: bitstring = (xor_enc(sqn,ak_754),AMF,mac_750) in
+    out(c, (AUTH_REQUEST,rand_45,autn_755));
+    in(c, (=AUTH_RESPONSE,sres_756: bitstring));
+    if (xres_751 = sres_756) then
+    event mme_received_auth_response(ID_749)
+)
+
+--------------------------------------------------------------
+3rd process: in(c, (msg1_748: bitstring,ID_749: bitstring)) done with message (ATTACH_REQUEST,a_706)
+
+3rd process: if (ATTACH_REQUEST = ATTACH_REQUEST) succeeds
+
+3rd process: event mme_sent_auth_request(a_706) executed
+
+3rd process: new nonce_auth_req: bitstring creating nonce_auth_req_850
+
+3rd process: new rand_45: bitstring creating rand_710
+
+3rd process: new sqn: bitstring creating sqn_711
+
+3rd process: let mac_842: bitstring = f1(KEY1,sqn_711,AMF,rand_710) succeeds
+
+3rd process: let xres_851: bitstring = f2(KEY1,rand_710) succeeds
+
+3rd process: let ck_857: key = f3(KEY1,rand_710) succeeds
+
+3rd process: let ik_862: key = f4(KEY1,rand_710) succeeds
+
+3rd process: let ak_866: key = f5(KEY1,rand_710) succeeds
+
+3rd process: let autn_869: bitstring = (xor_enc(sqn_711,f5(KEY1,rand_710)),AMF,f1(KEY1,sqn_711,AMF,rand_710)) succeeds
+
+3rd process: out(c, (~M_874,~M_875,(~M_877,~M_878,~M_879))) with ~M_874 = AUTH_REQUEST, ~M_875 = rand_710, ~M_877 = xor_enc(sqn_711,f5(KEY1,rand_710)), ~M_878 = AMF, ~M_879 = f1(KEY1,sqn_711,AMF,rand_710) done
+
+Additional knowledge of the attacker:
+~M_879 = f1(KEY1,sqn_711,AMF,rand_710)
+~M_877 = xor_enc(sqn_711,f5(KEY1,rand_710))
+~M_875 = rand_710
+--------------------------------------------------------------
+New processes:
+(
+    in(c, (=AUTH_REQUEST,rand_767: bitstring,(sqn_ak_768: bitstring,amf_769: bitstring,mac_770: bitstring)));
+    event ue_received_auth_request(ID1);
+    let ak_771: key = f5(KEY1,rand_767) in
+    let xsqn_772: bitstring = xor_dec(sqn_ak_768,ak_771) in
+    if (mac_770 = f1(KEY1,xsqn_772,amf_769,rand_767)) then
+    let sres_773: bitstring = f2(KEY1,rand_767) in
+    let ck_774: key = f3(KEY1,rand_767) in
+    let ik_775: key = f4(KEY1,rand_767) in
+    event ue_sent_auth_response(ID1);
+    out(c, (AUTH_RESPONSE,sres_773))
+) | (
+    in(c, (=AUTH_RESPONSE,sres_824: bitstring));
+    if (f2(KEY1,rand_721) = sres_824) then
+    event mme_received_auth_response(a_707)
+) | (
+    in(c, (=AUTH_RESPONSE,sres_871: bitstring));
+    if (f2(KEY1,rand_710) = sres_871) then
+    event mme_received_auth_response(a_706)
+)
+
+--------------------------------------------------------------
+1st process: in(c, (=AUTH_REQUEST,rand_767: bitstring,(sqn_ak_768: bitstring,amf_769: bitstring,mac_770: bitstring))) done with message (AUTH_REQUEST,~M_875,(~M_877,~M_831,~M_879)) = (AUTH_REQUEST,rand_710,(xor_enc(sqn_711,f5(KEY1,rand_710)),AMF,f1(KEY1,sqn_711,AMF,rand_710)))
+
+1st process: event ue_received_auth_request(ID1) executed
+
+1st process: let ak_886: key = f5(KEY1,rand_710) succeeds
+
+1st process: let xsqn_891: bitstring = sqn_711 succeeds
+
+1st process: if (f1(KEY1,sqn_711,AMF,rand_710) = f1(KEY1,sqn_711,AMF,rand_710)) succeeds
+
+1st process: let sres_897: bitstring = f2(KEY1,rand_710) succeeds
+
+1st process: let ck_901: key = f3(KEY1,rand_710) succeeds
+
+1st process: let ik_903: key = f4(KEY1,rand_710) succeeds
+
+1st process: event ue_sent_auth_response(ID1) executed
+
+1st process: out(c, (~M_906,~M_907)) with ~M_906 = AUTH_RESPONSE, ~M_907 = f2(KEY1,rand_710) done
+
+Additional knowledge of the attacker:
+~M_907 = f2(KEY1,rand_710)
+--------------------------------------------------------------
+1st process: Reduction 0
+
+New processes:
+(
+    in(c, (=AUTH_RESPONSE,sres_824: bitstring));
+    if (f2(KEY1,rand_721) = sres_824) then
+    event mme_received_auth_response(a_707)
+) | (
+    in(c, (=AUTH_RESPONSE,sres_871: bitstring));
+    if (f2(KEY1,rand_710) = sres_871) then
+    event mme_received_auth_response(a_706)
+)
+
+--------------------------------------------------------------
+2nd process: in(c, (=AUTH_RESPONSE,sres_871: bitstring)) done with message (AUTH_RESPONSE,~M_907) = (AUTH_RESPONSE,f2(KEY1,rand_710))
+
+2nd process: if (f2(KEY1,rand_710) = f2(KEY1,rand_710)) succeeds
+
+2nd process: event mme_received_auth_response(a_706) executed; it is a goal
+
+New processes:
+(
+    in(c, (=AUTH_RESPONSE,sres_824: bitstring));
+    if (f2(KEY1,rand_721) = sres_824) then
+    event mme_received_auth_response(a_707)
+) | (
+    0
+)
+
+--------------------------------------------------------------
+The event mme_received_auth_response(a_706) is executed in session a.
+A trace has been found.
+RESULT inj-event(mme_received_auth_response(id)) ==> inj-event(ue_sent_attach_request(id)) is false.
+RESULT (even event(mme_received_auth_response(id_643)) ==> event(ue_sent_attach_request(id_643)) is false.)
