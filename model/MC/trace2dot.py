@@ -102,6 +102,7 @@ def _singletrace2dot(trace,is_beautified=False):
     global digraph
     lines = []
     for line in trace:
+        #print(line)
         if( not (line.startswith("***") or
             line.startswith("WARNING") or line == "\n"
                  or line.startswith("-- specification") or line.startswith("-- as demonstrated")
@@ -118,7 +119,8 @@ def _singletrace2dot(trace,is_beautified=False):
             index=lines.index(item)
             states.append(lines[last:index]) # the first state is empty
     states.append(lines[index:len(lines)])
-    #print (ind)
+
+    print (states)
 
     lines=False #free space!
    
@@ -161,7 +163,7 @@ def _singletrace2dot(trace,is_beautified=False):
 
             for var, (val, newValInd) in stateVariablesDict.items():
                 if(newValInd == True):
-                    props += '*' + sr(var) + ' = ' + str(val) + '\\n'
+                    props += '*' + str(var) + ' = ' + str(val) + '\\n'
                     digraph = digraph + '*' + str(var) + ' = ' + str(val) + '\\n'
                 else:
                     props += str(var) + ' = ' + str(val) + '\\n'
@@ -268,8 +270,8 @@ def main():
     outputfile.close()
 
     # Draw Digraph:
-    print (digraph)
-    outputfilename = outputfilename + '_digraph.dot'
+    #print (digraph)
+    outputfilename = str(outputfilename) + '_digraph.dot'
     outputfile = open(outputfilename, 'w')
     outputfile.write(digraph)
     outputfile.close()

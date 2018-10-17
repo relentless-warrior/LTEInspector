@@ -324,8 +324,8 @@ noisy_channel_UM:=	FALSE;
 noisy_channel_MU:=	FALSE;
 
 ------------------- Adversary enabled or not --------------------
-inj_adv_UM_enabled:=	TRUE;
-inj_adv_MU_enabled:=	FALSE;
+inj_adv_UM_enabled:=	FALSE;
+inj_adv_MU_enabled:=	TRUE;
 range := 8; 
 ue_auth_fail_max_limit := 5; 
 ue_sm_reject_max_limit := 5; 
@@ -855,28 +855,28 @@ esac	;
 --- Property 4: The UE responds with a security_mode_complete message only if and only if the UE receives a valid security_mode_command message.
 --- Set the inj_adv_MU_enabled=TRUE and inj_adv_act_UM = FALSE
 --- Resultant attacks: Traceability attack, DoS attacks with tau_reject, service_reject, attach_reject, network detach, auth_reject
----LTLSPEC
----	G( 	!esm_failure
----		& X(!mobile_restart)
----		& ! mme_network_detach
----		& !ue_detach_requested
----		& !ue_inactivity_detected
----		& !sm_command_mac_failure
----		& ! paging_occasion
----		& ! ta_changed
----		& ! id_request_required
----		& inj_adv_act_MU != adv_MU_auth_reject
----		& inj_adv_act_MU != adv_MU_attach_reject
----		& inj_adv_act_MU != adv_MU_network_detach_req
----		& inj_adv_act_MU != adv_MU_paging_GUTI
----		& inj_adv_act_MU != adv_MU_paging_IMSI
----		& inj_adv_act_MU != adv_MU_tau_reject
----		& inj_adv_act_MU != adv_MU_service_reject
----	)
----	->
----		G((ue_state = ue_registered
----		& ue_attach_completed
----        & ue_action = ue_sm_complete) -> Y (mme_action=mme_security_mode_command)) ;
+LTLSPEC
+G( 	!esm_failure
+	& X(!mobile_restart)
+		& ! mme_network_detach
+		& !ue_detach_requested
+		& !ue_inactivity_detected
+		& !sm_command_mac_failure
+		& ! paging_occasion
+		& ! ta_changed
+		& ! id_request_required
+		& inj_adv_act_MU != adv_MU_auth_reject
+		& inj_adv_act_MU != adv_MU_attach_reject
+		& inj_adv_act_MU != adv_MU_network_detach_req
+		& inj_adv_act_MU != adv_MU_paging_GUTI
+		& inj_adv_act_MU != adv_MU_paging_IMSI
+		& inj_adv_act_MU != adv_MU_tau_reject
+		& inj_adv_act_MU != adv_MU_service_reject
+)
+	->
+		G((ue_state = ue_registered
+		& ue_attach_completed
+        & ue_action = ue_sm_complete) -> Y (mme_action=mme_security_mode_command)) ;
 --- COMMENT: ... -> O(chan_MU = chanMU_security_mode_command)  was not working
 ----##########################################		
 
@@ -906,12 +906,12 @@ esac	;
 
 ---#########################################
 --- Property 6: If the MME sends a security mode command message, the security context will be eventually updated.
---- Set the inj_adv_MU_enabled=FALSE and inj_adv_act_UM = TRUE
+--- Set the inj_adv_MU_enabled=TRUE and inj_adv_act_UM = FALSE
 --- Resultant attacks: Traceability attack, DoS attacks with tau_reject, service_reject, attach_reject, network detach, auth_reject
----LTLSPEC
----	G( 	!esm_failure &
----		X(!mobile_restart) &
----		! mme_network_detach &
+--- LTLSPEC
+--- 	G( 	!esm_failure &
+--- 	X(!mobile_restart) &
+--- 	! mme_network_detach &
 ---		!ue_detach_requested &
 ---		!ue_inactivity_detected &
 ---		!sm_command_mac_failure &
@@ -931,13 +931,17 @@ esac	;
 ---		inj_adv_act_UM != adv_UM_attach_complete &
 ---		inj_adv_act_UM != adv_UM_tau_request &
 ---		inj_adv_act_UM != adv_UM_tau_complete &
----		inj_adv_act_UM != adv_UM_service_request 
+---		inj_adv_act_UM != adv_UM_service_request &
+---		inj_adv_act_MU != adv_MU_auth_reject &
+---		inj_adv_act_MU != adv_MU_attach_reject &
+---		inj_adv_act_MU != adv_MU_network_detach_req &
+---		inj_adv_act_MU != adv_MU_tau_reject
+---
 ---		
 ---	)
 ---	->
 ---		G((mme_action=mme_security_mode_command)
 ---		-> (F (mme_security_context_updated))) ;
-
 ----##########################################		
 
 
@@ -978,26 +982,26 @@ esac	;
 --- Property 8: The UE will respond with the guti_reallocation_complete message only if the MME sends adv_MU_guti_reallocation_command
 --- Set the inj_adv_MU_enabled=TRUE and inj_adv_act_UM = FALSE
 --- Resultant attacks: linkability of GUTI/TMSI reallocation (Arapinis et al.)
-LTLSPEC
-	G( 	!esm_failure
-		& X(!mobile_restart)
-		& ! mme_network_detach
-		& !ue_detach_requested
-		& !ue_inactivity_detected
-		& !sm_command_mac_failure
-		& ! paging_occasion
-		& ! ta_changed
-		& ! id_request_required
-		& !cipher_suite_change
-		& inj_adv_act_MU != adv_MU_auth_reject
-		& inj_adv_act_MU != adv_MU_attach_reject
-		& inj_adv_act_MU != adv_MU_network_detach_req
-		& inj_adv_act_MU != adv_MU_paging_GUTI
-		& inj_adv_act_MU != adv_MU_paging_IMSI
-		& inj_adv_act_MU != adv_MU_tau_reject
-		& inj_adv_act_MU != adv_MU_service_reject
-	)
-	->
-		G((ue_attach_completed
-        & ue_action = ue_guti_reallocation_complete) -> Y (mme_action=mme_guti_reallocation_command)) ;
+---LTLSPEC
+---	G( 	!esm_failure
+---		& X(!mobile_restart)
+---		& ! mme_network_detach
+---		& !ue_detach_requested
+---		& !ue_inactivity_detected
+---		& !sm_command_mac_failure
+---		& ! paging_occasion
+---		& ! ta_changed
+---		& ! id_request_required
+---		& !cipher_suite_change
+---		& inj_adv_act_MU != adv_MU_auth_reject
+---		& inj_adv_act_MU != adv_MU_attach_reject
+---		& inj_adv_act_MU != adv_MU_network_detach_req
+---		& inj_adv_act_MU != adv_MU_paging_GUTI
+---		& inj_adv_act_MU != adv_MU_paging_IMSI
+---		& inj_adv_act_MU != adv_MU_tau_reject
+---		& inj_adv_act_MU != adv_MU_service_reject
+---	)
+---	->
+---		G((ue_attach_completed
+---        & ue_action = ue_guti_reallocation_complete) -> Y (mme_action=mme_guti_reallocation_command)) ;
 ---#######################################
